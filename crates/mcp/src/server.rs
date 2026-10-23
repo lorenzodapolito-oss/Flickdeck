@@ -18,18 +18,18 @@ const INVALID_PARAMS: i64 = -32602;
 const INTERNAL_ERROR: i64 = -32603;
 const RESOURCE_NOT_FOUND: i64 = -32002;
 
-const INSTRUCTIONS: &str = "DeckCraft is a presentation app (a PowerPoint clone). Coordinates are points on the \
+const INSTRUCTIONS: &str = "Flickdeck is a presentation app (a PowerPoint clone). Coordinates are points on the \
 current slide (y down; the default 16:9 slide is 960×540). Every action is a command: find ids and parameters with \
 list_commands and run them with run_command (or several with batch). Typical flow: new_presentation → add_slide \
 {layout:\"titleAndContent\", title, body} → add_shape / add_text_box / insert_picture / insert_chart → \
 inspect_slide to read back ids, boxes and text → render_slide to look at the result. Shape ids are looked up on the \
 current slide. An inserted shape is selected; run_command edit.select {ids:[…]} selects others. format.* acts on \
 the selected text or shapes; shape.fill, shape.line and the other shape commands whose parameters list `ids` act on \
-those shapes, else on the selected ones. Save with save_presentation (.deckcraft or .pptx).";
+those shapes, else on the selected ones. Save with save_presentation (.flickdeck or .pptx).";
 
 /// Resource URIs.
-pub const DOC_URI: &str = "deckcraft://document";
-pub const COMMANDS_URI: &str = "deckcraft://commands";
+pub const DOC_URI: &str = "flickdeck://document";
+pub const COMMANDS_URI: &str = "flickdeck://commands";
 
 /// An MCP server bound to one backend.
 pub struct Server {
@@ -136,13 +136,13 @@ impl Server {
                 Ok(json!({
                     "protocolVersion": version,
                     "capabilities": {"tools": {}, "resources": {}},
-                    "serverInfo": {"name": "deckcraft", "title": "DeckCraft", "version": env!("CARGO_PKG_VERSION"), "websiteUrl": deckcraft_engine::links::APP_PAGE},
+                    "serverInfo": {"name": "flickdeck", "title": "Flickdeck", "version": env!("CARGO_PKG_VERSION"), "websiteUrl": flickdeck_engine::links::APP_PAGE},
                     "instructions": format!(
                         "{INSTRUCTIONS} Backend: {}. Community: {} (Discord), {} (app page), {} (source). The `app.links` command returns these links.",
                         self.backend.describe(),
-                        deckcraft_engine::links::DISCORD,
-                        deckcraft_engine::links::APP_PAGE,
-                        deckcraft_engine::links::GITHUB
+                        flickdeck_engine::links::DISCORD,
+                        flickdeck_engine::links::APP_PAGE,
+                        flickdeck_engine::links::GITHUB
                     ),
                 }))
             }

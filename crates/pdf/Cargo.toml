@@ -1,18 +1,18 @@
 [package]
-name = "deckcraft-pdf"
+name = "flickdeck-pdf"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "DeckCraft PDF export (craft-pdf/Krilla): slides, notes pages and handouts with a selectable text layer, links and bookmarks"
+description = "Flickdeck PDF export (craft-pdf/Krilla): slides, notes pages and handouts with a selectable text layer, links and bookmarks"
 
 [lints]
 workspace = true
 
 [dependencies]
-deckcraft-model = { workspace = true }
-deckcraft-fonts = { workspace = true }
-deckcraft-text = { workspace = true }
-deckcraft-render = { workspace = true }
+flickdeck-model = { workspace = true }
+flickdeck-fonts = { workspace = true }
+flickdeck-text = { workspace = true }
+flickdeck-render = { workspace = true }
 craft-pdf = { workspace = true }
 kurbo = { workspace = true }
 serde = { workspace = true }

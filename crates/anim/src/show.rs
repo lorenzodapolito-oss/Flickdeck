@@ -3,8 +3,8 @@
 
 use std::collections::BTreeMap;
 
-use deckcraft_model::Presentation;
-use deckcraft_model::text::{Action, Hyperlink};
+use flickdeck_model::Presentation;
+use flickdeck_model::text::{Action, Hyperlink};
 
 use crate::Timeline;
 use crate::interact::SlideRun;

@@ -891,326 +891,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c87e182de0887fd5361989c677c4e8f5000cd9491d6d563161a8f3a5519fc7f"
 
 [[package]]
-name = "deckcraft"
-version = "0.10.0"
-dependencies = [
- "arboard",
- "cpal",
- "deckcraft-engine",
- "deckcraft-media",
- "deckcraft-ui-egui",
- "eframe",
- "egui",
- "fmv-macos-events",
- "image",
- "log",
- "rfd",
- "serde_json",
- "winit",
- "winresource",
-]
-
-[[package]]
-name = "deckcraft-anim"
-version = "0.10.0"
-dependencies = [
- "deckcraft-geom",
- "deckcraft-model",
- "serde",
-]
-
-[[package]]
-name = "deckcraft-av1"
-version = "0.10.0"
-dependencies = [
- "deckcraft-bitstream",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "deckcraft-bitstream"
-version = "0.10.0"
-dependencies = [
- "proptest",
-]
-
-[[package]]
-name = "deckcraft-cli"
-version = "0.10.0"
-dependencies = [
- "deckcraft-engine",
- "deckcraft-mcp",
- "serde_json",
- "zip",
-]
-
-[[package]]
-name = "deckcraft-color"
-version = "0.10.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "deckcraft-engine"
-version = "0.10.0"
-dependencies = [
- "deckcraft-anim",
- "deckcraft-color",
- "deckcraft-fonts",
- "deckcraft-format",
- "deckcraft-geom",
- "deckcraft-media",
- "deckcraft-model",
- "deckcraft-pdf",
- "deckcraft-pptx",
- "deckcraft-render",
- "deckcraft-text",
- "i_overlay",
- "image",
- "js-sys",
- "log",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "zip",
-]
-
-[[package]]
-name = "deckcraft-fonts"
-version = "0.10.0"
-dependencies = [
- "epaint_default_fonts",
- "harfrust 0.13.3",
- "kurbo",
- "log",
- "skrifa 0.47.0",
- "unicode-bidi",
-]
-
-[[package]]
-name = "deckcraft-format"
-version = "0.10.0"
-dependencies = [
- "deckcraft-model",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "zip",
-]
-
-[[package]]
-name = "deckcraft-geom"
-version = "0.10.0"
-dependencies = [
- "kurbo",
- "serde",
-]
-
-[[package]]
-name = "deckcraft-h264"
-version = "0.10.0"
-dependencies = [
- "deckcraft-bitstream",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "deckcraft-hevc"
-version = "0.10.0"
-dependencies = [
- "deckcraft-bitstream",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "deckcraft-isobmff"
-version = "0.10.0"
-dependencies = [
- "deckcraft-bitstream",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "deckcraft-matroska"
-version = "0.10.0"
-
-[[package]]
-name = "deckcraft-mcp"
-version = "0.10.0"
-dependencies = [
- "deckcraft-engine",
- "deckcraft-render",
- "log",
- "serde_json",
-]
-
-[[package]]
-name = "deckcraft-media"
-version = "0.10.0"
-dependencies = [
- "deckcraft-av1",
- "deckcraft-h264",
- "deckcraft-hevc",
- "deckcraft-isobmff",
- "deckcraft-matroska",
- "deckcraft-ogg",
- "deckcraft-opus",
- "deckcraft-vp9",
- "image",
- "log",
- "symphonia",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "deckcraft-metafile"
-version = "0.10.0"
-dependencies = [
- "image",
- "kurbo",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "deckcraft-model"
-version = "0.10.0"
-dependencies = [
- "deckcraft-color",
- "deckcraft-geom",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "deckcraft-ogg"
-version = "0.10.0"
-
-[[package]]
-name = "deckcraft-opus"
-version = "0.10.0"
-
-[[package]]
-name = "deckcraft-pdf"
-version = "0.10.0"
-dependencies = [
- "craft-pdf",
- "deckcraft-fonts",
- "deckcraft-model",
- "deckcraft-render",
- "deckcraft-text",
- "hayro-syntax",
- "krilla",
- "kurbo",
- "log",
- "serde",
- "thiserror 2.0.21",
- "wasm-bindgen-test",
-]
-
-[[package]]
-name = "deckcraft-pptx"
-version = "0.10.0"
-dependencies = [
- "deckcraft-color",
- "deckcraft-engine",
- "deckcraft-geom",
- "deckcraft-model",
- "image",
- "log",
- "quick-xml",
- "serde_json",
- "thiserror 2.0.21",
- "zip",
-]
-
-[[package]]
-name = "deckcraft-render"
-version = "0.10.0"
-dependencies = [
- "deckcraft-anim",
- "deckcraft-color",
- "deckcraft-fonts",
- "deckcraft-geom",
- "deckcraft-metafile",
- "deckcraft-model",
- "deckcraft-text",
- "image",
- "kurbo",
- "log",
- "skrifa 0.47.0",
- "vello_common 0.2.0",
- "vello_cpu 0.2.0",
-]
-
-[[package]]
-name = "deckcraft-text"
-version = "0.10.0"
-dependencies = [
- "chrono",
- "deckcraft-color",
- "deckcraft-fonts",
- "deckcraft-geom",
- "deckcraft-model",
- "unicode-bidi",
- "unicode-linebreak",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "deckcraft-ui-egui"
-version = "0.10.0"
-dependencies = [
- "deckcraft-anim",
- "deckcraft-color",
- "deckcraft-engine",
- "deckcraft-fonts",
- "deckcraft-geom",
- "deckcraft-media",
- "deckcraft-model",
- "deckcraft-render",
- "deckcraft-text",
- "egui",
- "egui_kittest",
- "js-sys",
- "log",
- "serde",
- "serde_json",
- "toml",
-]
-
-[[package]]
-name = "deckcraft-vp9"
-version = "0.10.0"
-dependencies = [
- "deckcraft-bitstream",
- "rayon",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "deckcraft-web"
-version = "0.10.0"
-dependencies = [
- "deckcraft-engine",
- "deckcraft-ui-egui",
- "eframe",
- "egui",
- "js-sys",
- "log",
- "rfd",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
 name = "derive_arbitrary"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1621,6 +1301,326 @@ dependencies = [
  "crc32fast",
  "miniz_oxide 0.9.1",
  "zlib-rs",
+]
+
+[[package]]
+name = "flickdeck"
+version = "0.10.0"
+dependencies = [
+ "arboard",
+ "cpal",
+ "eframe",
+ "egui",
+ "flickdeck-engine",
+ "flickdeck-media",
+ "flickdeck-ui-egui",
+ "fmv-macos-events",
+ "image",
+ "log",
+ "rfd",
+ "serde_json",
+ "winit",
+ "winresource",
+]
+
+[[package]]
+name = "flickdeck-anim"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-geom",
+ "flickdeck-model",
+ "serde",
+]
+
+[[package]]
+name = "flickdeck-av1"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-bitstream",
+ "rayon",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flickdeck-bitstream"
+version = "0.10.0"
+dependencies = [
+ "proptest",
+]
+
+[[package]]
+name = "flickdeck-cli"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-engine",
+ "flickdeck-mcp",
+ "serde_json",
+ "zip",
+]
+
+[[package]]
+name = "flickdeck-color"
+version = "0.10.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "flickdeck-engine"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-anim",
+ "flickdeck-color",
+ "flickdeck-fonts",
+ "flickdeck-format",
+ "flickdeck-geom",
+ "flickdeck-media",
+ "flickdeck-model",
+ "flickdeck-pdf",
+ "flickdeck-pptx",
+ "flickdeck-render",
+ "flickdeck-text",
+ "i_overlay",
+ "image",
+ "js-sys",
+ "log",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zip",
+]
+
+[[package]]
+name = "flickdeck-fonts"
+version = "0.10.0"
+dependencies = [
+ "epaint_default_fonts",
+ "harfrust 0.13.3",
+ "kurbo",
+ "log",
+ "skrifa 0.47.0",
+ "unicode-bidi",
+]
+
+[[package]]
+name = "flickdeck-format"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-model",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zip",
+]
+
+[[package]]
+name = "flickdeck-geom"
+version = "0.10.0"
+dependencies = [
+ "kurbo",
+ "serde",
+]
+
+[[package]]
+name = "flickdeck-h264"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-bitstream",
+ "rayon",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flickdeck-hevc"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-bitstream",
+ "rayon",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flickdeck-isobmff"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-bitstream",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flickdeck-matroska"
+version = "0.10.0"
+
+[[package]]
+name = "flickdeck-mcp"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-engine",
+ "flickdeck-render",
+ "log",
+ "serde_json",
+]
+
+[[package]]
+name = "flickdeck-media"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-av1",
+ "flickdeck-h264",
+ "flickdeck-hevc",
+ "flickdeck-isobmff",
+ "flickdeck-matroska",
+ "flickdeck-ogg",
+ "flickdeck-opus",
+ "flickdeck-vp9",
+ "image",
+ "log",
+ "symphonia",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flickdeck-metafile"
+version = "0.10.0"
+dependencies = [
+ "image",
+ "kurbo",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flickdeck-model"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-color",
+ "flickdeck-geom",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "flickdeck-ogg"
+version = "0.10.0"
+
+[[package]]
+name = "flickdeck-opus"
+version = "0.10.0"
+
+[[package]]
+name = "flickdeck-pdf"
+version = "0.10.0"
+dependencies = [
+ "craft-pdf",
+ "flickdeck-fonts",
+ "flickdeck-model",
+ "flickdeck-render",
+ "flickdeck-text",
+ "hayro-syntax",
+ "krilla",
+ "kurbo",
+ "log",
+ "serde",
+ "thiserror 2.0.21",
+ "wasm-bindgen-test",
+]
+
+[[package]]
+name = "flickdeck-pptx"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-color",
+ "flickdeck-engine",
+ "flickdeck-geom",
+ "flickdeck-model",
+ "image",
+ "log",
+ "quick-xml",
+ "serde_json",
+ "thiserror 2.0.21",
+ "zip",
+]
+
+[[package]]
+name = "flickdeck-render"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-anim",
+ "flickdeck-color",
+ "flickdeck-fonts",
+ "flickdeck-geom",
+ "flickdeck-metafile",
+ "flickdeck-model",
+ "flickdeck-text",
+ "image",
+ "kurbo",
+ "log",
+ "skrifa 0.47.0",
+ "vello_common 0.2.0",
+ "vello_cpu 0.2.0",
+]
+
+[[package]]
+name = "flickdeck-text"
+version = "0.10.0"
+dependencies = [
+ "chrono",
+ "flickdeck-color",
+ "flickdeck-fonts",
+ "flickdeck-geom",
+ "flickdeck-model",
+ "unicode-bidi",
+ "unicode-linebreak",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "flickdeck-ui-egui"
+version = "0.10.0"
+dependencies = [
+ "egui",
+ "egui_kittest",
+ "flickdeck-anim",
+ "flickdeck-color",
+ "flickdeck-engine",
+ "flickdeck-fonts",
+ "flickdeck-geom",
+ "flickdeck-media",
+ "flickdeck-model",
+ "flickdeck-render",
+ "flickdeck-text",
+ "js-sys",
+ "log",
+ "serde",
+ "serde_json",
+ "toml",
+]
+
+[[package]]
+name = "flickdeck-vp9"
+version = "0.10.0"
+dependencies = [
+ "flickdeck-bitstream",
+ "rayon",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "flickdeck-web"
+version = "0.10.0"
+dependencies = [
+ "eframe",
+ "egui",
+ "flickdeck-engine",
+ "flickdeck-ui-egui",
+ "js-sys",
+ "log",
+ "rfd",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]

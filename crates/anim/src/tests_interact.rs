@@ -3,8 +3,8 @@
 
 use std::sync::Arc;
 
-use deckcraft_model::text::Action;
-use deckcraft_model::{AnimClass, AnimStart, Animation, Presentation, Shape, ShapeId, Slide, SlideId, Transition, Xfrm};
+use flickdeck_model::text::Action;
+use flickdeck_model::{AnimClass, AnimStart, Animation, Presentation, Shape, ShapeId, Slide, SlideId, Transition, Xfrm};
 
 use crate::*;
 

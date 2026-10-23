@@ -1,7 +1,7 @@
 //! Morph: matching shapes between two slides, interpolating their boxes and building the frames.
 
-use deckcraft_model::resolve::{self, Ctx};
-use deckcraft_model::{ColorRef, Fill, Geom, Presentation, Rgba, Shape, ShapeId, ShapeKind, Slide, Xfrm, walk};
+use flickdeck_model::resolve::{self, Ctx};
+use flickdeck_model::{ColorRef, Fill, Geom, Presentation, Rgba, Shape, ShapeId, ShapeKind, Slide, Xfrm, walk};
 
 use crate::clampf;
 use crate::easing::smooth;

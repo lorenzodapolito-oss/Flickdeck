@@ -1,4 +1,4 @@
-//! DeckCraft's egui frontend: a PowerPoint-style UI over `deckcraft-engine`.
+//! Flickdeck's egui frontend: a PowerPoint-style UI over `flickdeck-engine`.
 //!
 //! The UI is thin: every action goes through [`SlideApp::run`], which handles UI commands
 //! (views, panes, zoom) here and sends everything else to the engine. The ribbon, menus,
@@ -40,8 +40,8 @@ pub mod widgets;
 use std::collections::HashMap;
 use std::sync::mpsc::{Receiver, Sender};
 
-use deckcraft_engine::{Mods, Session, Target, UiRequest};
-use deckcraft_model::{LayoutId, MasterId, SlideId};
+use flickdeck_engine::{Mods, Session, Target, UiRequest};
+use flickdeck_model::{LayoutId, MasterId, SlideId};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -142,7 +142,7 @@ fn purpose_of(purpose: &str) -> FilePurpose {
 }
 
 fn is_presentation_name(lower: &str) -> bool {
-    lower.ends_with(".deckcraft")
+    lower.ends_with(".flickdeck")
         || lower.ends_with(".slidecraft")
         || lower.ends_with(".pptx")
         || lower.ends_with(".potx")
@@ -168,7 +168,7 @@ fn infer_command(name: &str, bytes: &[u8]) -> Option<&'static str> {
     if is_presentation_name(&lower) {
         return Some("file.openBytes");
     }
-    let ct = deckcraft_engine::cmd::insert::content_type(name, bytes);
+    let ct = flickdeck_engine::cmd::insert::content_type(name, bytes);
     if ct.starts_with("image/") {
         Some("insert.picture")
     } else if ct.starts_with("audio/") {
@@ -187,11 +187,11 @@ fn command_for(purpose: FilePurpose, name: &str, bytes: &[u8]) -> Result<&'stati
         FilePurpose::Picture => Some("insert.picture"),
         FilePurpose::Audio => Some("insert.audio"),
         FilePurpose::Video => Some("insert.video"),
-        FilePurpose::ChangePicture => deckcraft_engine::cmd::insert::content_type(name, bytes).starts_with("image/").then_some("picture.change"),
+        FilePurpose::ChangePicture => flickdeck_engine::cmd::insert::content_type(name, bytes).starts_with("image/").then_some("picture.change"),
         FilePurpose::Open => open_command(name),
         FilePurpose::Infer => infer_command(name, bytes),
     };
-    cmd.ok_or_else(|| format!("{name}: DeckCraft can't open this kind of file"))
+    cmd.ok_or_else(|| format!("{name}: Flickdeck can't open this kind of file"))
 }
 
 /// How long a transient status message stays visible.
@@ -219,7 +219,7 @@ pub struct Services {
     /// Put HTML and its plain-text alternative on the system clipboard. `true` when it landed.
     pub clipboard_set_html: Option<Box<dyn FnMut(&str, &str) -> bool>>,
     /// Audio output for media playback (cpal on desktop); without one media plays silently.
-    pub audio_out: Option<Box<dyn deckcraft_media::AudioOut>>,
+    pub audio_out: Option<Box<dyn flickdeck_media::AudioOut>>,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -392,7 +392,7 @@ pub const UI_COMMANDS: &[(&str, &str, Option<&str>, &str)] = &[
         Some("Cmd+P"),
         "{layout?, perPage?, slides?, includeHidden?, frame?, paper?: letter|a4|legal|a3, orientation?: portrait|landscape}",
     ),
-    ("app.about", "About DeckCraft", None, "{}"),
+    ("app.about", "About Flickdeck", None, "{}"),
     ("app.palette", "Command Palette", Some("Cmd+Shift+P"), "{}"),
     ("app.preferences", "Preferences…", Some("Cmd+,"), "{}"),
     ("app.openDialog", "Open…", None, "{purpose?}"),
@@ -429,7 +429,7 @@ struct AnimPreview {
     /// egui time when the first frame latched the clock (`None` until then).
     started: Option<f64>,
     elapsed: f64,
-    timeline: deckcraft_anim::Timeline,
+    timeline: flickdeck_anim::Timeline,
 }
 
 pub struct SlideApp {
@@ -497,7 +497,7 @@ pub struct SlideApp {
     /// Selection pane: folded groups, renaming, drag and drop.
     pub selpane: selpane::State,
     /// Arrange ▸ Align: Align to Slide (`true`) or Align Selected Objects, ticked for that selection.
-    pub(crate) align_to: Option<(Vec<deckcraft_model::ShapeId>, bool)>,
+    pub(crate) align_to: Option<(Vec<flickdeck_model::ShapeId>, bool)>,
     /// View › New Window: a second window on one presentation. `None` when it is closed.
     pub doc_window: Option<doc_window::DocWindow>,
     /// Slide Sorter: folded sections, inline rename, dragging a whole section.
@@ -732,7 +732,7 @@ impl SlideApp {
     }
 
     /// Exports the active presentation as `fmt` (`pdf`, `png`, `pngAll`, `jpeg`, `pptx`,
-    /// `deckcraft`, `outline`) through `file.export`: the save picker on the desktop, a download
+    /// `flickdeck`, `outline`) through `file.export`: the save picker on the desktop, a download
     /// on the web. `extra` adds `file.export` params (the PDF's layout, slides…). The
     /// presentation keeps its own file. Returns whether a file was written or handed over.
     pub fn export_as(&mut self, fmt: &str, extra: Value) -> bool {
@@ -744,10 +744,10 @@ impl SlideApp {
             "jpeg" | "jpg" => ("jpg", "jpeg", false),
             "pptx" => ("pptx", "pptx", false),
             "outline" | "txt" => ("txt", "outline", false),
-            "deckcraft" => ("deckcraft", "deckcraft", false),
+            "flickdeck" => ("flickdeck", "flickdeck", false),
             "gif" => ("gif", "gif", false),
             other => {
-                self.set_status(format!("DeckCraft can't export “{other}”"));
+                self.set_status(format!("Flickdeck can't export “{other}”"));
                 return false;
             }
         };
@@ -778,16 +778,16 @@ impl SlideApp {
                 }
                 return any;
             }
-            "pdf" => deckcraft_engine::cmd::file::pdf_bytes(&doc, &extra),
-            "gif" => deckcraft_engine::cmd::file::gif_bytes(&doc, &extra),
-            other => deckcraft_engine::cmd::file::save_bytes(&doc, other),
+            "pdf" => flickdeck_engine::cmd::file::pdf_bytes(&doc, &extra),
+            "gif" => flickdeck_engine::cmd::file::gif_bytes(&doc, &extra),
+            other => flickdeck_engine::cmd::file::save_bytes(&doc, other),
         };
         self.download(&suggested, bytes)
     }
 
     /// Hands `bytes` to the browser as a download (web); false (with the reason in the status
     /// bar) when there are no bytes or no way to download.
-    fn download(&mut self, name: &str, bytes: deckcraft_engine::Result<Vec<u8>>) -> bool {
+    fn download(&mut self, name: &str, bytes: flickdeck_engine::Result<Vec<u8>>) -> bool {
         match (bytes, self.services.download.as_mut()) {
             (Ok(b), Some(dl)) => {
                 dl(name, &b);
@@ -804,7 +804,7 @@ impl SlideApp {
         }
     }
 
-    /// File › Print: DeckCraft prints through a PDF. On the desktop the PDF (with the Print page's
+    /// File › Print: Flickdeck prints through a PDF. On the desktop the PDF (with the Print page's
     /// layout, slides and options) is written to the temporary folder and opened in the system's
     /// PDF viewer, which has the printers; on the web it downloads.
     pub fn print_pdf(&mut self, params: Value) -> bool {
@@ -812,7 +812,7 @@ impl SlideApp {
         let mut params = if params.is_object() { params } else { json!({}) };
         if self.services.pick_save.is_none() {
             // Web: the browser hands the PDF to the user.
-            let bytes = deckcraft_engine::cmd::file::pdf_bytes(&doc, &params);
+            let bytes = flickdeck_engine::cmd::file::pdf_bytes(&doc, &params);
             return self.download(&format!("{title}.pdf"), bytes);
         }
         let safe: String = title.chars().map(|c| if c.is_alphanumeric() || c == ' ' || c == '-' { c } else { '_' }).collect();
@@ -1016,7 +1016,7 @@ impl SlideApp {
             "app.insertAudioDialog" => self.pick_and_insert("audio", "insert.audio"),
             "app.reuseSlidesDialog" => self.pick_and_reuse(p.get("keepFormatting").and_then(Value::as_bool).unwrap_or(false)),
             "app.insertVideoDialog" => self.pick_and_insert("video", "insert.video"),
-            "app.saveAsDialog" => self.save_as_dialog("deckcraft"),
+            "app.saveAsDialog" => self.save_as_dialog("flickdeck"),
             "app.exportDialog" => self.dialog = Some(dialogs::Dialog::new("export")),
             "app.pasteSpecial" => self.dialog = Some(dialogs::Dialog::new("pasteSpecial")),
             "app.browseThemeDialog" => {
@@ -1053,7 +1053,7 @@ impl SlideApp {
                 self.dialog = Some(dialogs::Dialog::new(d));
             }
             "app.links" => {
-                use deckcraft_engine::links::*;
+                use flickdeck_engine::links::*;
                 return Ok(json!({"discord": DISCORD, "website": WEBSITE, "apps": APPS, "appPage": APP_PAGE, "github": GITHUB}));
             }
             _ => return Err(format!("unknown UI command `{id}`")),
@@ -1069,7 +1069,7 @@ impl SlideApp {
 
     /// First slide Play from Start should open: the custom show or range, skipping hidden slides.
     pub fn show_start_index(&self) -> usize {
-        self.session.active().and_then(|d| deckcraft_anim::show_order(&d.doc).first().copied()).unwrap_or(0)
+        self.session.active().and_then(|d| flickdeck_anim::show_order(&d.doc).first().copied()).unwrap_or(0)
     }
 
     pub fn start_show(&mut self, from: usize, reading: bool) {
@@ -1082,7 +1082,7 @@ impl SlideApp {
 
     /// Play custom show `name` from its first slide. Set Up Slide Show is left as it was.
     pub fn start_custom_show(&mut self, name: &str, reading: bool) {
-        let state = self.session.active().and_then(|d| deckcraft_anim::ShowState::play_custom(&d.doc, name));
+        let state = self.session.active().and_then(|d| flickdeck_anim::ShowState::play_custom(&d.doc, name));
         let Some(state) = state else { return };
         let from = state.slide;
         self.start_show(from, reading);
@@ -1106,7 +1106,7 @@ impl SlideApp {
     }
 
     /// Timeline and playhead for this frame's canvas raster. `None` when the editor should draw the slide at rest.
-    pub fn anim_preview_draw(&self) -> Option<(deckcraft_anim::Timeline, f64)> {
+    pub fn anim_preview_draw(&self) -> Option<(flickdeck_anim::Timeline, f64)> {
         self.anim_preview.as_ref().map(|p| (p.timeline.clone(), p.elapsed))
     }
 
@@ -1118,7 +1118,7 @@ impl SlideApp {
         let alive = self.show.is_none()
             && self.session.active().is_some_and(|d| {
                 d.uid == uid
-                    && d.selection.target == deckcraft_engine::Target::Slides
+                    && d.selection.target == flickdeck_engine::Target::Slides
                     && d.selection.slide == slide
                     && d.doc.slides.get(slide).is_some_and(|s| std::sync::Arc::as_ptr(s) as usize == ptr)
             });
@@ -1143,7 +1143,7 @@ impl SlideApp {
             let Some(d) = self.session.active() else {
                 return Err("no presentation is open".into());
             };
-            if d.selection.target != deckcraft_engine::Target::Slides {
+            if d.selection.target != flickdeck_engine::Target::Slides {
                 return Err("animation preview plays the current slide".into());
             }
             let slide = d.selection.slide;
@@ -1151,7 +1151,7 @@ impl SlideApp {
                 return Err("no slide to preview".into());
             };
             let ptr = std::sync::Arc::as_ptr(slide_arc) as usize;
-            let timeline = deckcraft_anim::ShowState::timeline(&d.doc, slide);
+            let timeline = flickdeck_anim::ShowState::timeline(&d.doc, slide);
             (d.uid, slide, ptr, timeline)
         };
         if timeline.is_empty() {
@@ -1252,7 +1252,7 @@ impl SlideApp {
                     Some(Ok(bytes)) => {
                         let name = std::path::Path::new(&path).file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
                         args["name"] = json!(name);
-                        args["data"] = json!(deckcraft_engine::cmd::base64_encode(&bytes));
+                        args["data"] = json!(flickdeck_engine::cmd::base64_encode(&bytes));
                         self.session.execute(cmd, &args)
                     }
                     _ => {
@@ -1280,7 +1280,7 @@ impl SlideApp {
 
     pub fn save_as_dialog(&mut self, format: &str) {
         let name = self.session.active().map(|d| d.title()).unwrap_or_else(|| "Presentation".into());
-        let ext = if format == "pptx" { "pptx" } else { "deckcraft" };
+        let ext = if format == "pptx" { "pptx" } else { "flickdeck" };
         let suggested = format!("{name}.{ext}");
         if let Some(pick) = self.services.pick_save.as_mut() {
             if let Some(path) = pick(&suggested) {
@@ -1296,7 +1296,7 @@ impl SlideApp {
         } else if let Some(dl) = self.services.download.as_mut()
             && let Some(d) = self.session.active()
         {
-            match deckcraft_engine::cmd::file::save_bytes(&d.doc, ext) {
+            match flickdeck_engine::cmd::file::save_bytes(&d.doc, ext) {
                 Ok(bytes) => dl(&suggested, &bytes),
                 Err(e) => self.set_status(e.to_string()),
             }
@@ -1324,7 +1324,7 @@ impl SlideApp {
                 Err(e) => self.set_status(e.to_string()),
             }
         } else {
-            self.save_as_dialog("deckcraft");
+            self.save_as_dialog("flickdeck");
         }
     }
 
@@ -1342,7 +1342,7 @@ impl SlideApp {
                 UiRequest::Message { text } => self.set_status(text),
                 UiRequest::PickFile { purpose } => {
                     if purpose == "saveAs" {
-                        self.save_as_dialog("deckcraft");
+                        self.save_as_dialog("flickdeck");
                     }
                 }
                 UiRequest::Media { action, shape, ms } => {
@@ -1444,7 +1444,7 @@ impl SlideApp {
         let params = if cmd == "slide.fromOutline" {
             json!({"text": String::from_utf8_lossy(bytes), "markdown": name.to_ascii_lowercase().ends_with(".md")})
         } else {
-            json!({"name": name, "data": deckcraft_engine::cmd::base64_encode(bytes)})
+            json!({"name": name, "data": flickdeck_engine::cmd::base64_encode(bytes)})
         };
         let result = if cmd == "file.openBytes" || self.viewing_target(&req.target) {
             self.session.execute(cmd, &params).map(|_| ()).map_err(|e| e.to_string())
@@ -1709,7 +1709,7 @@ impl SlideApp {
         }
         let img = if image_paste { self.services.clipboard_image.as_mut().and_then(|f| f()) } else { None };
         if let Some(png) = img {
-            let data = deckcraft_engine::cmd::base64_encode(&png);
+            let data = flickdeck_engine::cmd::base64_encode(&png);
             if let Err(e) = self.session.execute("insert.picture", &json!({"name": "Pasted image.png", "data": data})) {
                 self.set_status(e.to_string());
             }
@@ -1736,7 +1736,7 @@ impl SlideApp {
                     let r = match img {
                         Some(png) => self
                             .session
-                            .execute("insert.picture", &json!({"name": "Pasted image.png", "data": deckcraft_engine::cmd::base64_encode(&png)})),
+                            .execute("insert.picture", &json!({"name": "Pasted image.png", "data": flickdeck_engine::cmd::base64_encode(&png)})),
                         None => {
                             let mut params = json!({"text": text});
                             if let Some(h) = html {
@@ -1779,7 +1779,7 @@ impl SlideApp {
     /// Offer the copy or cut on the system clipboard.
     ///
     /// Slides go out as plain text. Text goes out as HTML plus the same plain words, so a paste
-    /// back into DeckCraft still uses the internal clipboard. A textless shape leaves the
+    /// back into Flickdeck still uses the internal clipboard. A textless shape leaves the
     /// invisible [`OBJECTS_MARKER`] rather than a picture: with only an image on the clipboard
     /// egui-winit drops Ctrl+V, and the shortcut could no longer paste the shape here (#182).
     fn publish_clipboard(&mut self, ctx: &egui::Context, cut: bool) {
@@ -1882,7 +1882,7 @@ impl SlideApp {
         if self.show.is_none()
             && let Some(d) = self.session.active()
         {
-            let here: Vec<deckcraft_model::ShapeId> = if d.selection.target == deckcraft_engine::Target::Slides {
+            let here: Vec<flickdeck_model::ShapeId> = if d.selection.target == flickdeck_engine::Target::Slides {
                 media::slide_media(&d.doc, d.selection.slide).into_iter().map(|m| m.0).collect()
             } else {
                 vec![]
@@ -2014,7 +2014,7 @@ pub fn now_ms() -> f64 {
 /// `<name>2.png`... like the native export) when `all`. `transparent` leaves the slide
 /// background out (PNG only, #784).
 fn web_image_files(
-    doc: &deckcraft_model::Presentation,
+    doc: &flickdeck_model::Presentation,
     current: usize,
     all: bool,
     name: &str,
@@ -2024,13 +2024,13 @@ fn web_image_files(
     let slides: Vec<usize> = if all { (0..doc.slides.len()).collect() } else { vec![current] };
     let single = slides.len() == 1;
     let scale = 2.0;
-    let dpi = deckcraft_render::dpi_for_scale(scale);
+    let dpi = flickdeck_render::dpi_for_scale(scale);
     slides
         .into_iter()
         .enumerate()
         .map(|(k, i)| {
-            let opts = deckcraft_render::RenderOpts { scale, transparent_background: transparent && ext == "png", ..Default::default() };
-            let img = deckcraft_render::render_slide(doc, i, &opts);
+            let opts = flickdeck_render::RenderOpts { scale, transparent_background: transparent && ext == "png", ..Default::default() };
+            let img = flickdeck_render::render_slide(doc, i, &opts);
             let bytes = if ext == "png" { img.to_png_at(dpi) } else { img.to_jpeg_at(92, Some(dpi)) };
             let file = if single { format!("{name}.{ext}") } else { format!("{name}{}.{ext}", k + 1) };
             (file, bytes)
@@ -2125,7 +2125,7 @@ mod tests {
     /// The browser "PNG images (all slides)" export yields one image per slide, not just the selected one (#64).
     #[test]
     fn web_export_all_slides_gives_one_file_per_slide() {
-        let mut doc = deckcraft_model::Presentation::default();
+        let mut doc = flickdeck_model::Presentation::default();
         if let Some(first) = doc.slides.first().cloned() {
             doc.slides.push(first.clone());
             doc.slides.push(first);
@@ -2152,7 +2152,7 @@ mod tests {
             ..Default::default()
         };
         let mut app = SlideApp::new(Session::with_new(), services);
-        let corner_alpha = |bytes: &[u8]| deckcraft_render::decode_image(bytes).unwrap().get_pixel(2, 2).0[3];
+        let corner_alpha = |bytes: &[u8]| flickdeck_render::decode_image(bytes).unwrap().get_pixel(2, 2).0[3];
         assert!(app.export_as("png", json!({})));
         assert!(app.export_as("png", json!({"transparentBackground": true})));
         assert!(app.export_as("jpeg", json!({"transparentBackground": true})));
@@ -2206,12 +2206,12 @@ mod tests {
     #[test]
     fn opening_a_file_with_missing_fonts_shows_a_toast_once() {
         use egui_kittest::kittest::Queryable;
-        let mut p = deckcraft_model::Presentation::default();
+        let mut p = flickdeck_model::Presentation::default();
         let slide = std::sync::Arc::make_mut(&mut p.slides[0]);
-        let mut body = deckcraft_model::text::TextBody::from_text("Hello");
+        let mut body = flickdeck_model::text::TextBody::from_text("Hello");
         body.paragraphs[0].runs[0].props.font = Some("Qqq Nonexistent Sans".into());
         slide.shapes[0].text = Some(body);
-        let data = deckcraft_engine::cmd::base64_encode(&deckcraft_engine::cmd::file::save_bytes(&p, "pptx").unwrap());
+        let data = flickdeck_engine::cmd::base64_encode(&flickdeck_engine::cmd::file::save_bytes(&p, "pptx").unwrap());
         let mut harness = egui_kittest::Harness::builder().with_size(egui::vec2(1200.0, 800.0)).build_ui_state(
             |ui, app: &mut SlideApp| {
                 app.logic(ui.ctx());
@@ -2245,14 +2245,14 @@ mod tests {
             let pics: Vec<_> = d.doc.slides[0]
                 .shapes
                 .iter()
-                .filter_map(|s| if let deckcraft_model::ShapeKind::Picture { fill } = &s.kind { Some(fill.media) } else { None })
+                .filter_map(|s| if let flickdeck_model::ShapeKind::Picture { fill } = &s.kind { Some(fill.media) } else { None })
                 .collect();
             assert_eq!(pics.len(), 1, "one picture, replaced in place");
             pics[0]
         };
         let insert = |app: &mut SlideApp| {
             let id =
-                app.session.execute("insert.picture", &json!({"name": "a.svg", "data": deckcraft_engine::cmd::base64_encode(&svg("red"))})).unwrap()
+                app.session.execute("insert.picture", &json!({"name": "a.svg", "data": flickdeck_engine::cmd::base64_encode(&svg("red"))})).unwrap()
                     ["id"]
                     .clone();
             app.session.execute("edit.select", &json!({"ids": [id]})).unwrap();
@@ -2444,7 +2444,7 @@ mod tests {
         let session = Session::with_new();
         let png = {
             let d = session.active().unwrap();
-            deckcraft_engine::cmd::file::render_png(&d.doc, 0, 0.1, false).0
+            flickdeck_engine::cmd::file::render_png(&d.doc, 0, 0.1, false).0
         };
         assert!(!png.is_empty());
         let services = Services { clipboard_image: Some(Box::new(move || Some(png.clone()))), ..Default::default() };
@@ -2458,7 +2458,7 @@ mod tests {
         harness.run_steps(2);
         let pictures = |app: &SlideApp| {
             let d = app.session.active().unwrap();
-            d.doc.slides[0].shapes.iter().filter(|s| matches!(s.kind, deckcraft_model::ShapeKind::Picture { .. })).count()
+            d.doc.slides[0].shapes.iter().filter(|s| matches!(s.kind, flickdeck_model::ShapeKind::Picture { .. })).count()
         };
         let v = |pressed| egui::Event::Key { key: egui::Key::V, physical_key: None, pressed, repeat: false, modifiers: egui::Modifiers::COMMAND };
         // A text paste (Paste event on the press) does not also paste the image on release.
@@ -2722,7 +2722,7 @@ mod tests {
 
     fn shape_x(app: &SlideApp, id: u64) -> f64 {
         let st = app.session.active().unwrap();
-        st.shape(deckcraft_model::ShapeId(id as u32)).and_then(|s| s.xfrm).unwrap().x
+        st.shape(flickdeck_model::ShapeId(id as u32)).and_then(|s| s.xfrm).unwrap().x
     }
 
     /// #270: PowerPoint's Normal view draws objects off the slide on the area around it, where
@@ -2751,7 +2751,7 @@ mod tests {
             let shape = px(centre);
             let board = px(slide.min + egui::vec2(1060.0 * k, 400.0 * k));
             let doc = &harness.state().session.active().unwrap().doc;
-            let accent = doc.masters[0].theme.colors.get(deckcraft_color::SchemeSlot::Accent1);
+            let accent = doc.masters[0].theme.colors.get(flickdeck_color::SchemeSlot::Accent1);
             let close = |a: u8, b: u8| (a as i32 - b as i32).abs() <= 4;
             assert!(close(shape[0], accent.r) && close(shape[1], accent.g) && close(shape[2], accent.b), "{shape:?} vs {accent:?}");
             assert_ne!(shape, board);
@@ -2928,12 +2928,12 @@ mod tests {
     #[test]
     fn missing_recent_is_marked_and_its_error_shows() {
         let mut harness = harness();
-        let missing = "/deckcraft-tests/172/missing.deckcraft";
+        let missing = "/flickdeck-tests/172/missing.flickdeck";
         harness.state_mut().ui.recent = vec![missing.to_string()];
         harness.run_steps(2);
         // The row is labelled with the file's name. Clicking it raises the open error, and the
         // drawn message is a second node that mentions the name (the OS text after it varies).
-        harness.get_by_label("missing.deckcraft").click();
+        harness.get_by_label("missing.flickdeck").click();
         harness.run_steps(2);
         // The file is read in the background (#350): wait for that read to finish.
         for _ in 0..500 {
@@ -2945,14 +2945,14 @@ mod tests {
         }
         harness.run_steps(2);
         assert!(harness.state().toast.is_some(), "the open error was raised");
-        assert!(harness.get_all_by_label_contains("missing.deckcraft").count() >= 2, "the open error is drawn on the page, next to the entry");
+        assert!(harness.get_all_by_label_contains("missing.flickdeck").count() >= 2, "the open error is drawn on the page, next to the entry");
     }
 
     /// #172: a Recent entry can be removed from the list.
     #[test]
     fn recent_entry_can_be_removed() {
         let mut harness = harness();
-        harness.state_mut().ui.recent = vec!["/deckcraft-tests/172/a.deckcraft".into(), "/deckcraft-tests/172/b.deckcraft".into()];
+        harness.state_mut().ui.recent = vec!["/flickdeck-tests/172/a.flickdeck".into(), "/flickdeck-tests/172/b.flickdeck".into()];
         harness.run_steps(2);
         let removes = harness.get_all_by_label("Remove from Recent").collect::<Vec<_>>();
         assert_eq!(removes.len(), 2);
@@ -2961,7 +2961,7 @@ mod tests {
         assert!(removes[1].rect().right() < 1200.0, "reachable in the 1200-wide window: {:?}", removes[1].rect());
         removes[1].click();
         harness.run_steps(1);
-        assert_eq!(harness.state().ui.recent, vec!["/deckcraft-tests/172/a.deckcraft"]);
+        assert_eq!(harness.state().ui.recent, vec!["/flickdeck-tests/172/a.flickdeck"]);
     }
 
     /// The existence probe tells present files from missing ones and never touches remote paths.
@@ -2969,11 +2969,11 @@ mod tests {
     fn recent_exists_tells_missing_from_present() {
         let mut app = SlideApp::new(Session::new(), Services::default());
         let mut path = std::env::temp_dir();
-        path.push(format!("deckcraft-test-172-{}.deckcraft", std::process::id()));
+        path.push(format!("flickdeck-test-172-{}.flickdeck", std::process::id()));
         std::fs::write(&path, b"").unwrap();
         assert!(app.recent_exists(&path.to_string_lossy()), "the file exists");
-        assert!(!app.recent_exists("/deckcraft-tests/172/missing.deckcraft"));
-        assert!(app.recent_exists("\\\\server/share/deck.deckcraft"), "UNC paths are never probed");
+        assert!(!app.recent_exists("/flickdeck-tests/172/missing.flickdeck"));
+        assert!(app.recent_exists("\\\\server/share/deck.flickdeck"), "UNC paths are never probed");
         std::fs::remove_file(&path).ok();
     }
 
@@ -3010,7 +3010,7 @@ mod tests {
     /// heading, Enter in a bulleted point, then saving as .pptx and reopening.
     #[test]
     fn editing_notes_in_the_pane_keeps_their_formatting() {
-        use deckcraft_model::text::{Bullet, ParaProps, Paragraph, Run, RunProps, TextBody};
+        use flickdeck_model::text::{Bullet, ParaProps, Paragraph, Run, RunProps, TextBody};
         let point = |runs: Vec<Run>| Paragraph {
             level: 1,
             props: ParaProps {
@@ -3173,8 +3173,8 @@ mod tests {
         session.execute("animation.set", &json!({"effect": "fade", "duration": 1000})).unwrap();
         session.execute("animation.options", &json!({"textBuild": "byParagraph"})).unwrap();
         let doc = session.active().unwrap().doc.clone();
-        let tl = deckcraft_anim::ShowState::timeline(&doc, 0);
-        let shape = deckcraft_model::ShapeId(text as u32);
+        let tl = flickdeck_anim::ShowState::timeline(&doc, 0);
+        let shape = flickdeck_model::ShapeId(text as u32);
         let para = |time: f64, i: usize| preview::shape_state_at(&tl, shape, time).paras.into_iter().find(|(p, _)| *p == i).map(|(_, s)| s).unwrap();
         assert!(!para(0.0, 0).visible && !para(0.0, 1).visible, "entrances have not started");
         let mid = para(0.25, 0);
@@ -3186,13 +3186,13 @@ mod tests {
         session.execute("shape.fill", &json!({"id": id, "color": "#CC2200"})).unwrap();
         session.execute("animation.set", &json!({"effect": "fade", "duration": 1000})).unwrap();
         let doc = session.active().unwrap().doc.clone();
-        let tl = deckcraft_anim::ShowState::timeline(&doc, 0);
+        let tl = flickdeck_anim::ShowState::timeline(&doc, 0);
         let (w, h) = (doc.slide_size.width.round().max(1.0) as u32, doc.slide_size.height.round().max(1.0) as u32);
         let paint = |time: Option<f64>| {
-            let f = |sid: deckcraft_model::ShapeId| preview::shape_state_at(&tl, sid, time.unwrap_or(0.0));
-            let state: Option<&dyn Fn(deckcraft_model::ShapeId) -> deckcraft_render::ShapeState> = if time.is_some() { Some(&f) } else { None };
-            let opts = deckcraft_render::RenderOpts { scale: 1.0, size: Some((w, h)), state, ..Default::default() };
-            deckcraft_render::render_slide(&doc, 0, &opts).pixel(460, 340)
+            let f = |sid: flickdeck_model::ShapeId| preview::shape_state_at(&tl, sid, time.unwrap_or(0.0));
+            let state: Option<&dyn Fn(flickdeck_model::ShapeId) -> flickdeck_render::ShapeState> = if time.is_some() { Some(&f) } else { None };
+            let opts = flickdeck_render::RenderOpts { scale: 1.0, size: Some((w, h)), state, ..Default::default() };
+            flickdeck_render::render_slide(&doc, 0, &opts).pixel(460, 340)
         };
         let rest = paint(None);
         let start = paint(Some(0.0));

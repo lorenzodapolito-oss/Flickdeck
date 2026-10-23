@@ -1,8 +1,8 @@
 //! Picture Format ▸ Color: Recolor presets and Set Transparent Color.
 
-use deckcraft_color::{Rgba, SchemeSlot};
-use deckcraft_model::style::PictureAdjust;
-use deckcraft_model::{ColorRef, ShapeKind};
+use flickdeck_color::{Rgba, SchemeSlot};
+use flickdeck_model::style::PictureAdjust;
+use flickdeck_model::{ColorRef, ShapeKind};
 use serde_json::{Value, json};
 
 use super::*;

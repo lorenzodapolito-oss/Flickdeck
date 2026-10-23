@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Flickdeck MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
+
+    wix build flickdeck.wxs -arch x64 -d Version=1.2.3 -d BinDir=... -d IconPath=... -o out.msi
+
+  Per-machine install into Program Files, a Start Menu shortcut, `.flickdeck` owned by
+  Flickdeck, and Flickdeck offered under "Open with" for .pptx/.potx/.ppsx (without taking over
+  the user's default app for them).
+
+  UpgradeCode is fixed for Flickdeck forever (playbook §6); never change it.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+      Name="Flickdeck"
+      Manufacturer="Learning Machines LLC"
+      Version="$(var.Version)"
+      UpgradeCode="6F9C69E7-7825-40D2-BF26-C274DA676425"
+      Scope="perMachine"
+      Compressed="yes"
+      Language="1033">
+    <SummaryInformation Description="Flickdeck presentations and slide shows" Manufacturer="Learning Machines LLC" />
+    <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
+         (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes"
+        DowngradeErrorMessage="A newer version of Flickdeck is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="FlickdeckIcon.ico" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="FlickdeckIcon.ico" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/lorenzodapolito-oss/Flickdeck" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/lorenzodapolito-oss/Flickdeck" />
+    <Property Id="ARPHELPLINK" Value="https://discord.gg/artcraft" />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Flickdeck" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <Feature Id="Main" Title="Flickdeck" Level="1">
+      <ComponentGroupRef Id="FlickdeckFiles" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="FlickdeckFiles" Directory="INSTALLFOLDER">
+      <Component Id="FlickdeckApp" Guid="D87EA444-41A4-4C19-922E-66D1A29461FF">
+        <File Id="FlickdeckExe" Source="$(var.BinDir)\flickdeck.exe" KeyPath="yes">
+          <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="Flickdeck"
+              Description="Flickdeck presentations and slide shows" WorkingDirectory="INSTALLFOLDER" Advertise="yes"
+              Icon="FlickdeckIcon.ico" IconIndex="0" />
+        </File>
+
+        <!-- .flickdeck: Flickdeck's own format. -->
+        <ProgId Id="Flickdeck.Presentation" Description="Flickdeck Presentation" Icon="FlickdeckExe" IconIndex="0">
+          <Extension Id="flickdeck" ContentType="application/x-flickdeck">
+            <Verb Id="open" Command="Open" TargetFile="FlickdeckExe" Argument="&quot;%1&quot;" />
+          </Extension>
+        </ProgId>
+
+        <!-- "Open with" for PowerPoint formats, without becoming the default. -->
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\flickdeck.exe" Name="FriendlyAppName" Value="Flickdeck" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\flickdeck.exe\shell\open\command" Value="&quot;[#FlickdeckExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\flickdeck.exe\SupportedTypes" Name=".flickdeck" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\flickdeck.exe\SupportedTypes" Name=".pptx" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\flickdeck.exe\SupportedTypes" Name=".potx" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\flickdeck.exe\SupportedTypes" Name=".ppsx" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.pptx\OpenWithProgids" Name="Flickdeck.Presentation" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.potx\OpenWithProgids" Name="Flickdeck.Presentation" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.ppsx\OpenWithProgids" Name="Flickdeck.Presentation" Value="" Type="string" />
+
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\flickdeck.exe" Value="[#FlickdeckExe]" Type="string" />
+      </Component>
+
+      <Component Id="FlickdeckCli">
+        <File Id="FlickdeckCliExe" Source="$(var.BinDir)\flickdeck-cli.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

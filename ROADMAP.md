@@ -1,10 +1,10 @@
-# DeckCraft roadmap
+# Flickdeck roadmap
 
 **Stage: alpha** · next: beta, ~20 points and ~120–210 h away
 
 > **Last reviewed:** 2026-10-14 · **Last updated:** 2026-10-18 · **Change:** minor (native chart payloads stored in bounded ZIP members; previous: major, community PR wave 2026-10-14: ~60 landed items in the progress log, among them the Font, Paragraph, Photo Album, theme colour and font and Date and Time dialogs, presenter and show controls, the SmartArt Text Pane and PPTX corpus slices; breadth 84% after `cargo xtask parity`, ready stays ~55%, stage stays alpha; duplicated rows and headers folded; previous: minor, hours to ~95% per audience added) · **Target:** Microsoft PowerPoint for Mac 16.113 (Microsoft 365)
 
-DeckCraft aims at full PowerPoint parity, and to be better: faster, open (a documented zip+JSON
+Flickdeck aims at full PowerPoint parity, and to be better: faster, open (a documented zip+JSON
 format plus PPTX), scriptable by agents (CLI, JSON control channel, MCP), and available everywhere
 (macOS, Windows, Linux, BSD and the web). This page is the summary; the detail is in
 [docs/target-app-parity.md](docs/target-app-parity.md) and the work list in
@@ -123,9 +123,9 @@ Ranked; detail and the full beta plan in [docs/roadmap.md](docs/roadmap.md).
 
 ## Agents: CLI and MCP
 
-Every command is reachable from `deckcraft-cli` (`run`, `describe`, `commands`, `app` for the running
-window, `render`, `convert`), from MCP (`deckcraft-cli mcp`, optionally `--connect PORT`), and from the
-app's JSON control channel (`deckcraft --control PORT`).
+Every command is reachable from `flickdeck-cli` (`run`, `describe`, `commands`, `app` for the running
+window, `render`, `convert`), from MCP (`flickdeck-cli mcp`, optionally `--connect PORT`), and from the
+app's JSON control channel (`flickdeck --control PORT`).
 
 ## Progress log
 
@@ -134,15 +134,15 @@ app's JSON control channel (`deckcraft --control PORT`).
 | 2026-10-18 | Native chart sidecar bytes move from JSON arrays into referenced ZIP entries, with shared media byte/item limits and bounded reads; older inline sidecars still load. Synthetic format regressions cover large workbooks and malformed members |
 | 2026-10-18 | Slide thumbnails and the Slide Sorter render only the slides in view: on a deck of more than 600 slides they used to evict their own thumbnails, so the pane flashed white and never finished (#969) |
 | 2026-10-17 | Opening a file caps absurd effect sizes (glow, soft edges, shadows, reflections, on shapes, text and table text) at what Format Shape allows: a glow of 10^18 pt in a .pptx made rendering ask for 34 GB and abort |
-| 2026-10-17 | Opening a .deckcraft file whose shapes repeat an id gives the repeats fresh ids (groups, layouts and masters too), so the deck validates and edits by id find one shape |
+| 2026-10-17 | Opening a .flickdeck file whose shapes repeat an id gives the repeats fresh ids (groups, layouts and masters too), so the deck validates and edits by id find one shape |
 | 2026-10-17 | Edit Points: turning a shape into a freeform is one undo step, so Undo brings the original shape back (it used to stay a freeform) |
 | 2026-10-17 | While a placeholder's text is being edited, a click on a shape in front of it selects that shape instead of moving the caret, as in PowerPoint (#931) |
 | 2026-10-15 | Native saves keep an imported chart's embedded workbook, drawings and relationships; headless PPTX → edit → native save/reopen → PPTX tests verify the payloads and stale-workbook rejection |
 | 2026-10-15 | PPTX trigger sequences keep separate On Click steps, including paragraph builds; synthetic import/edit/save/reopen and headless show regressions |
-| 2026-10-16 | Export: PNG with a transparent background — the slide background is left out, only the slide's content is drawn (Export… dialog, File › Export, web download, `file.export`/`file.render` `transparentBackground`, `deckcraft-cli render --transparent`) (#784) |
+| 2026-10-16 | Export: PNG with a transparent background — the slide background is left out, only the slide's content is drawn (Export… dialog, File › Export, web download, `file.export`/`file.render` `transparentBackground`, `flickdeck-cli render --transparent`) (#784) |
 | 2026-10-16 | Arrange ▸ Align: Align to Slide and Align Selected Objects, as in PowerPoint. One object aligns to the slide and several to each other until the other choice is ticked; the choice holds for that selection and also drives Distribute |
 | 2026-10-15 | CLI: .txt and .md export includes table cell text, which it used to skip silently (#814) |
-| 2026-10-15 | A `.pptx` slide that can't be read is reported, not dropped in silence: `lostSlides` from `file.open`, a message and a repaired copy in the app, a warning from `deckcraft-cli` (#203) |
+| 2026-10-15 | A `.pptx` slide that can't be read is reported, not dropped in silence: `lostSlides` from `file.open`, a message and a repaired copy in the app, a warning from `flickdeck-cli` (#203) |
 | 2026-10-16 | AutoFormat as you type: ordinals (1st, 22nd, 103rd) get superscript suffixes after a space or punctuation; Tools ▸ AutoCorrect and `text.autocorrect {ordinals}` turn it off |
 | 2026-10-16 | A PowerPoint Show (`.ppsx`) opened from the command line or the file association starts its slide show, as in PowerPoint; File › Open still opens it for editing (#862) |
 | 2026-10-15 | PDF export and rendering: `anchorCtr` centres the drawn text block — right-aligned text no longer ran past the box edge (#736) |
@@ -190,12 +190,12 @@ app's JSON control channel (`deckcraft --control PORT`).
 | 2026-10-14 | See All Slides and zoom during a show: a thumbnail grid (G, or All), click to jump, and click-to-zoom at 2× (Z). Presenter view has Black, White, All slides and Zoom |
 | 2026-10-13 | The command palette skips commands that need a value, so searching for Export runs the export dialog (#79) |
 | 2026-10-14 | PNG and JPEG slide export record their resolution. The default 2 pixels per point is 144 dpi, so Preview and print show the slide's real size instead of twice that |
-| 2026-10-14 | Design ▸ Effects: named effect schemes (DeckCraft, Soft, Crisp, Lift, Glow, Plain) replace the theme's fills, lines and effects and leave colours and fonts. `design.effects` |
+| 2026-10-14 | Design ▸ Effects: named effect schemes (Flickdeck, Soft, Crisp, Lift, Glow, Plain) replace the theme's fills, lines and effects and leave colours and fonts. `design.effects` |
 | 2026-10-14 | Slide Master: Preserve on the open master or layout, and Title and Footers placeholder checkboxes. Two commands (`master.preserve`, `master.placeholders`) |
 | 2026-10-14 | Trim Media: start, end and fades open from the selected clip, so OK no longer resets them to zero |
 | 2026-10-14 | Format Background: a solid fill's transparency, and for a picture transparency, tile, offset, scale, alignment and mirror. Apply to All copies a picture background onto every slide. The same `design.background` command; dialogs stay 27 |
 | 2026-10-13 | Editor slide rasters sit on the physical pixel grid, so small text stays sharp on a Retina display instead of being blurred by a linear filter between pixels (#184) |
-| 2026-10-14 | Copy and paste with other apps: bold, italic and underline travel as HTML (Pages keeps them); a shape with no text still copies as DeckCraft objects so Ctrl+V pastes it (#182) |
+| 2026-10-14 | Copy and paste with other apps: bold, italic and underline travel as HTML (Pages keeps them); a shape with no text still copies as Flickdeck objects so Ctrl+V pastes it (#182) |
 | 2026-10-13 | Animations ▸ Preview plays the current slide's animations on the editor canvas (Play All does the same); Escape or a click stops it. Checklist row Preview in editor re-scored done |
 | 2026-10-14 | A two-finger twist on the trackpad rotates the selected shapes, as one undo step. Pinch-zoom is unchanged |
 | 2026-10-14 | A trackpad swipe turns the page: sideways when the slide fits the window, and any flick during the slide show. One gesture turns one page. Pinch-zoom is unchanged |
@@ -208,8 +208,8 @@ app's JSON control channel (`deckcraft --control PORT`).
 | 2026-10-14 | Draw: pen pressure scales ink width when the pointer reports it (a mouse or a missing reading stays at the pen width; a stroke saved as a flat 0.5 still draws at the pen width). Tilt is not read |
 | 2026-10-13 | Saving a presentation keeps the embedded workbook behind an unchanged chart, and the chart part's relationships (#335). Editing the chart drops that workbook instead of writing numbers that no longer match it |
 | 2026-10-13 | A presentation whose object ids are used up refuses to grow instead of handing out duplicate ids (#407) |
-| 2026-10-13 | macOS: a Finder double-click, Open With, a drop on the Dock icon and `open -a DeckCraft deck.pptx` open the file (#138, #347). `Info.plist` now declares the documents DeckCraft opens (`.deckcraft`, `.pptx`, `.potx`, `.ppsx`, the same set as the Windows installer and the Linux desktop file, kept equal by a test), and the `kAEOpenDocuments` Apple event is handled through the pinned `fmv-macos-events` crate as in GridCraft; the `-psn_` argument older macOS adds on a Finder launch is ignored. PowerPoint stays the default until the user picks DeckCraft |
-| 2026-10-13 | Slide transitions like PowerPoint: every transition and option measured frame by frame against PowerPoint's video export and retuned (curves, directions, soft edges, 3-D perspective, contents moving over backgrounds); PowerPoint's own XML elements and defaults read and written (diagonal Wipe, Zoom, Shape In/Out, Glitter Hexagons, Shred In/Out, Page Curl Single); `deckcraft-cli render-transition` renders frames headless |
+| 2026-10-13 | macOS: a Finder double-click, Open With, a drop on the Dock icon and `open -a Flickdeck deck.pptx` open the file (#138, #347). `Info.plist` now declares the documents Flickdeck opens (`.flickdeck`, `.pptx`, `.potx`, `.ppsx`, the same set as the Windows installer and the Linux desktop file, kept equal by a test), and the `kAEOpenDocuments` Apple event is handled through the pinned `fmv-macos-events` crate as in GridCraft; the `-psn_` argument older macOS adds on a Finder launch is ignored. PowerPoint stays the default until the user picks Flickdeck |
+| 2026-10-13 | Slide transitions like PowerPoint: every transition and option measured frame by frame against PowerPoint's video export and retuned (curves, directions, soft edges, 3-D perspective, contents moving over backgrounds); PowerPoint's own XML elements and defaults read and written (diagonal Wipe, Zoom, Shape In/Out, Glitter Hexagons, Shred In/Out, Page Curl Single); `flickdeck-cli render-transition` renders frames headless |
 | 2026-10-13 | Wild text cases measured against PowerPoint (102 synthetic slides): bidi by run language, East Asian vertical text upright, mongolianVert/wordArtVert/wordArtVertRtl, underline styles and strikethrough at the font's metrics, centre/right/decimal tabs, East Asian, Thai, Hindi, Arabic and Hebrew numbering, small caps, all-caps "ß", transparent text, soft hyphens, kinsoku, rtlCol and just/dist anchoring, emoji presentation, fallback faces that no longer move the baseline |
 | 2026-10-13 | Render matches PowerPoint more closely on wild shape, picture and table cases: even-odd custom paths, dashes and caps, arrowheads, radial and path gradients, tile rects, rotWithShape, gradient lines, shadows cast by what is drawn (group and perspective too), group fill, picture borders, tiles, reflection, recolour (biLevel, alphaInv, brightness/contrast), table borders and grid default, 20+ preset shapes by their ECMA formulas, default miter joins, and approximate 3-D bevels, cameras and face lighting |
 | 2026-10-13 | Slide show for interactive decks: click-triggered animations play (one step per click, repeating, applied in click order), a slide the show returns to keeps its state and its triggered animations go on where they stopped, shapes an animation has hidden cannot be clicked, a shape without an action blocks the one beneath it, hand cursor over clickable shapes, "advance on click" off respected |
@@ -228,13 +228,13 @@ app's JSON control channel (`deckcraft --control PORT`).
 | 2026-10-12 | File tab (Backstage) like PowerPoint's (#76): File or Alt+F opens Home, New, Open, Info, Save, Save As, Print, Export, Close, Account and Options over the window, Esc or Back returns, arrows walk the side menu; the start screen is File › Home. Pages run the existing file commands; new `file.info`, print slide ranges (`"1-3, 5"`), Print through a PDF, Ctrl+P, and Close/Ctrl+W ask about unsaved changes |
 | 2026-10-12 | WordArt text warps (`prstTxWarp`): all 40 presets drawn, curves fitted to PowerPoint by observation; warp adjusts round-trip |
 | 2026-10-12 | Render: line widths, dashes and arrowheads inside a group no longer scale with the group's child-coordinate mapping, so a group in a small legacy child space (scale about 1600) draws thin lines instead of covering the slide (#233) |
-| 2026-10-12 | `deckcraft-cli help` and each subcommand's `--help` explain the CLI to an agent; `describe` spells out a command's parameters and what it acts on; `commands` lists one command per line |
+| 2026-10-12 | `flickdeck-cli help` and each subcommand's `--help` explain the CLI to an agent; `describe` spells out a command's parameters and what it acts on; `commands` lists one command per line |
 | 2026-10-11 | Animated GIF export of the deck: the Export… dialog (Animated GIF), `file.export` format `gif`, CLI and MCP (#171) |
 | 2026-10-10 | Progress docs restructured to the craftrules standard; full re-measure (breadth 79%, ready ~55%, mainstream ~53%, essentials ~62%, alpha). Landed: Animation Painter (#54), Morph geometry outlines (#27), animated GIF playback (#39), hyperlink colour and following links in the show (#37, #45), date fields in their own format (#36), flipped shapes keep readable text (#35), show transition fix (#46), start screen from the Home button (#49), MCP export lists PDF (#65), OmaStore manifest (#57) |
 | 2026-10-09 | v0.4.0 released. UAX #9 bidi and Arabic shaping (#4), Morph with Words and Characters (#5), tables grow to fit and PDF cell text (#14), rotating log file (#7), DX12 default on Windows (#16), H.264/HEVC overflow hardening (#2), PPTX sniffing anywhere in the zip (#19) |
 | 2026-10-08 | v0.2.0 and v0.3.0 released: Windows arm64, Flatpak aarch64, AppImage zsync updates, branded DMG |
 | 2026-10-07 | v0.1.0 released, signed and notarized; About window with contributor credits (#3); PrintCraft renamed PdfCraft |
-| 2026-10-06 | Renamed SlideCraft to DeckCraft. PPTX import/export, PDF export, media playback with pure-Rust codecs, connectors with glue, freeform tools, merge shapes, AutoRecover, gradient editor, web build, release CI, parity catalogue |
+| 2026-10-06 | Renamed SlideCraft to Flickdeck. PPTX import/export, PDF export, media playback with pure-Rust codecs, connectors with glue, freeform tools, merge shapes, AutoRecover, gradient editor, web build, release CI, parity catalogue |
 | 2026-10-05 | M0: workspace, model, geometry, fonts, text, renderer, engine, MCP, CLI, PowerPoint-style egui UI, slide show engine |
 
 ## Revision history

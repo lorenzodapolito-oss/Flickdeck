@@ -1,8 +1,8 @@
 //! Theme parts.
 
-use deckcraft_color::SchemeSlot;
-use deckcraft_model::style::{ColorRef, Effects, Fill};
-use deckcraft_model::theme::{FontSet, Theme, default_format};
+use flickdeck_color::SchemeSlot;
+use flickdeck_model::style::{ColorRef, Effects, Fill};
+use flickdeck_model::theme::{FontSet, Theme, default_format};
 
 use super::{Exp, Out, dml};
 use crate::opc::{NS_A, NS_R};

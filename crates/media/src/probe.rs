@@ -9,7 +9,7 @@ pub struct AudioInfo {
     pub codec: String,
     pub sample_rate: u32,
     pub channels: u16,
-    /// DeckCraft can decode it.
+    /// Flickdeck can decode it.
     pub decodable: bool,
 }
 
@@ -98,9 +98,9 @@ fn codec_label(short: &str) -> String {
 }
 
 fn probe_mp4(bytes: &Bytes) -> Result<MediaInfo> {
-    use deckcraft_isobmff::{CodecConfig, TrackKind};
+    use flickdeck_isobmff::{CodecConfig, TrackKind};
     let src: &[u8] = bytes;
-    let f = deckcraft_isobmff::open(src).map_err(|e| MediaError::Corrupt(e.to_string()))?;
+    let f = flickdeck_isobmff::open(src).map_err(|e| MediaError::Corrupt(e.to_string()))?;
     let mut info = MediaInfo { container: if f.is_quicktime { "mov" } else { "mp4" }, ..Default::default() };
     let mut dur = if f.timescale > 0 { f.duration as f64 / f.timescale as f64 } else { 0.0 };
     if let Some(ti) = f.track_of_kind(TrackKind::Video) {
@@ -138,9 +138,9 @@ fn probe_mp4(bytes: &Bytes) -> Result<MediaInfo> {
 }
 
 fn probe_mkv(bytes: &Bytes) -> Result<MediaInfo> {
-    use deckcraft_matroska::{Codec, TrackKind};
+    use flickdeck_matroska::{Codec, TrackKind};
     let src: &[u8] = bytes;
-    let f = deckcraft_matroska::open(src).map_err(|e| MediaError::Corrupt(e.to_string()))?;
+    let f = flickdeck_matroska::open(src).map_err(|e| MediaError::Corrupt(e.to_string()))?;
     let mut info = MediaInfo { container: if f.is_webm() { "webm" } else { "matroska" }, ..Default::default() };
     let dur = f.duration_ns().map(|n| n as f64 / 1e9).unwrap_or(0.0);
     info.duration_ms = ms(dur);
@@ -171,11 +171,11 @@ fn probe_mkv(bytes: &Bytes) -> Result<MediaInfo> {
 
 fn probe_ogg(bytes: &Bytes) -> Option<MediaInfo> {
     let src: &[u8] = bytes;
-    let f = deckcraft_ogg::open(src).ok()?;
-    let s = f.stream_of(deckcraft_ogg::Codec::Opus)?;
+    let f = flickdeck_ogg::open(src).ok()?;
+    let s = f.stream_of(flickdeck_ogg::Codec::Opus)?;
     let st = f.streams.get(s)?;
-    let head = deckcraft_opus::OpusHead::parse(st.headers.first()?).ok()?;
-    let timing = deckcraft_ogg::OpusTiming::of(st, head.pre_skip as u32).ok()?;
+    let head = flickdeck_opus::OpusHead::parse(st.headers.first()?).ok()?;
+    let timing = flickdeck_ogg::OpusTiming::of(st, head.pre_skip as u32).ok()?;
     Some(MediaInfo {
         container: "ogg",
         duration_ms: ms(timing.total as f64 / 48_000.0),

@@ -4,7 +4,7 @@
 //! `file.recovery.open` reopens what was left there as unsaved presentations that remember where
 //! they were saved.
 //!
-//! An entry is `<uid>.deckcraft` (the presentation) plus `<uid>.json` (`{"path", "title",
+//! An entry is `<uid>.flickdeck` (the presentation) plus `<uid>.json` (`{"path", "title",
 //! "saved", "owner"}`: the original file, the title, when it was written (Unix seconds) and the
 //! instance that owns it).
 //!
@@ -26,12 +26,12 @@ use crate::{DocState, EngineError, Result, Session};
 pub fn default_dir() -> Option<PathBuf> {
     let home = std::env::var_os("HOME").map(PathBuf::from);
     if cfg!(target_os = "macos") {
-        return home.map(|h| h.join("Library/Application Support/DeckCraft/Recovery"));
+        return home.map(|h| h.join("Library/Application Support/Flickdeck/Recovery"));
     }
     if cfg!(target_os = "windows") {
-        return std::env::var_os("APPDATA").map(|a| PathBuf::from(a).join("DeckCraft").join("Recovery"));
+        return std::env::var_os("APPDATA").map(|a| PathBuf::from(a).join("Flickdeck").join("Recovery"));
     }
-    std::env::var_os("XDG_DATA_HOME").map(PathBuf::from).or_else(|| home.map(|h| h.join(".local/share"))).map(|d| d.join("deckcraft/recovery"))
+    std::env::var_os("XDG_DATA_HOME").map(PathBuf::from).or_else(|| home.map(|h| h.join(".local/share"))).map(|d| d.join("flickdeck/recovery"))
 }
 
 /// Uids and instance ids stay below 2^53 so they survive JSON numbers read as `f64`.
@@ -104,7 +104,7 @@ fn read_regular(p: &Path, max: u64) -> Option<Vec<u8>> {
 }
 
 fn files(dir: &Path, uid: u64) -> (PathBuf, PathBuf) {
-    (dir.join(format!("{uid}.deckcraft")), dir.join(format!("{uid}.json")))
+    (dir.join(format!("{uid}.flickdeck")), dir.join(format!("{uid}.json")))
 }
 
 fn now_secs() -> u64 {
@@ -137,7 +137,7 @@ pub fn save(s: &Session, dir: &Path) -> Result<usize> {
             continue;
         }
         let (doc, meta) = files(dir, d.uid);
-        let bytes = deckcraft_format::save(&d.doc).map_err(|e| EngineError::Other(e.to_string()))?;
+        let bytes = flickdeck_format::save(&d.doc).map_err(|e| EngineError::Other(e.to_string()))?;
         write_atomic(&doc, &bytes)?;
         let m = json!({"path": d.path, "title": d.title(), "saved": now_secs(), "owner": instance_id()});
         write_atomic(&meta, m.to_string().as_bytes())?;
@@ -152,7 +152,7 @@ pub fn list(dir: &Path) -> Vec<(u64, Value)> {
     let Ok(rd) = std::fs::read_dir(dir) else { return out };
     for e in rd.flatten() {
         let p = e.path();
-        if p.extension().and_then(|x| x.to_str()) != Some("deckcraft") {
+        if p.extension().and_then(|x| x.to_str()) != Some("flickdeck") {
             continue;
         }
         if !std::fs::metadata(&p).is_ok_and(|m| m.is_file()) {
@@ -196,8 +196,8 @@ pub fn open(s: &mut Session, dir: &Path) -> Result<Vec<usize>> {
         }
         let (doc, meta_path) = files(dir, uid);
         let Some(bytes) = read_regular(&doc, MAX_ENTRY_BYTES) else { continue };
-        let Ok(mut d) = deckcraft_format::load(&bytes) else { continue };
-        deckcraft_format::repair(&mut d);
+        let Ok(mut d) = flickdeck_format::load(&bytes) else { continue };
+        flickdeck_format::repair(&mut d);
         let path = meta.get("path").and_then(Value::as_str).map(str::to_string);
         let title = meta.get("title").and_then(Value::as_str).filter(|t| !t.is_empty()).unwrap_or("Presentation").to_string();
         // Take the entry over (so another instance starting now leaves it alone), keeping its
@@ -242,7 +242,7 @@ mod tests {
     use super::*;
 
     fn temp(name: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("deckcraft-{name}-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("flickdeck-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         dir
     }
@@ -273,7 +273,7 @@ mod tests {
         assert!(open(&mut s3, &dir).unwrap().is_empty());
         // Saving the recovered presentation drops the entry.
         s3.recovery_dir = Some(dir.clone());
-        let path = dir.join("saved.deckcraft");
+        let path = dir.join("saved.flickdeck");
         s3.execute("file.saveAs", &json!({"path": path.to_string_lossy()})).unwrap();
         assert!(list(&dir).is_empty());
         let _ = std::fs::remove_dir_all(&dir);
@@ -299,7 +299,7 @@ mod tests {
         let mut o = Session::new();
         o.execute("file.new", &json!({})).unwrap();
         o.execute("slide.new", &json!({"layout": "blank"})).unwrap();
-        let bytes = deckcraft_format::save(&o.doc().unwrap().doc).unwrap();
+        let bytes = flickdeck_format::save(&o.doc().unwrap().doc).unwrap();
         let uid = other + 5;
         let (d, m) = files(&dir, uid);
         std::fs::write(&d, bytes).unwrap();
@@ -332,7 +332,7 @@ mod tests {
     fn corrupt_entries_are_skipped() {
         let dir = temp("recovery-corrupt");
         std::fs::create_dir_all(&dir).unwrap();
-        std::fs::write(dir.join("7.deckcraft"), b"not a presentation").unwrap();
+        std::fs::write(dir.join("7.flickdeck"), b"not a presentation").unwrap();
         std::fs::write(dir.join("7.json"), b"[1, 2]").unwrap();
         let mut s = Session::new();
         assert!(open(&mut s, &dir).unwrap().is_empty());
@@ -354,12 +354,12 @@ mod tests {
         save(&s, &dir).unwrap();
         let (good, _) = files(&dir, s.doc().unwrap().uid);
         for i in 1..=(MAX_REOPEN as u64 + 3) {
-            std::fs::copy(&good, dir.join(format!("{}.deckcraft", 100_000 + i))).unwrap();
+            std::fs::copy(&good, dir.join(format!("{}.flickdeck", 100_000 + i))).unwrap();
         }
-        for name in ["5.deckcraft", "6.json"] {
+        for name in ["5.flickdeck", "6.json"] {
             let _ = std::process::Command::new("mkfifo").arg(dir.join(name)).status();
         }
-        std::fs::write(dir.join("6.deckcraft"), std::fs::read(&good).unwrap()).unwrap();
+        std::fs::write(dir.join("6.flickdeck"), std::fs::read(&good).unwrap()).unwrap();
         let (tx, rx) = std::sync::mpsc::channel();
         let d = dir.clone();
         std::thread::spawn(move || {

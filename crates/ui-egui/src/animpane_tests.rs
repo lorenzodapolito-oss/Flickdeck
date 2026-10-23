@@ -1,10 +1,10 @@
 //! The Animation Pane's advanced timeline driven with the mouse: dragging a bar changes the
 //! delay, dragging its right edge changes the duration, each one undoable command.
 
-use deckcraft_engine::Session;
 use egui::Pos2;
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
+use flickdeck_engine::Session;
 use serde_json::json;
 
 use crate::{Services, SlideApp};

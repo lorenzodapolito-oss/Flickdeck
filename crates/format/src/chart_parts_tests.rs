@@ -1,6 +1,6 @@
 use super::*;
-use deckcraft_model::chart::{Chart, ChartPart, ChartRel, ChartType};
-use deckcraft_model::{Master, Shape, ShapeId};
+use flickdeck_model::chart::{Chart, ChartPart, ChartRel, ChartType};
+use flickdeck_model::{Master, Shape, ShapeId};
 use serde_json::{Value, json};
 
 const PART: &str = "ppt/embeddings/owned.xlsx";

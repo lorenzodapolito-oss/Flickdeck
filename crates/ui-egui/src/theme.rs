@@ -30,7 +30,7 @@ pub struct Tokens {
     pub hover: Color32,
     pub pressed: Color32,
     pub selected: Color32,
-    /// DeckCraft's accent (tabs underline, selected thumbnail, primary buttons).
+    /// Flickdeck's accent (tabs underline, selected thumbnail, primary buttons).
     pub accent: Color32,
     pub accent_text: Color32,
     pub contextual: Color32,
@@ -45,30 +45,32 @@ pub struct Tokens {
 }
 
 impl Tokens {
+    /// Soft pastel light theme (shared with WordBook.it and SheetCalc.it): dusty-blue window,
+    /// ivory ribbon and canvas, sage accent; text anthracite, never black; white only in text fields.
     pub fn light() -> Self {
         Tokens {
             dark: false,
-            chrome: Color32::from_rgb(0xF5, 0xF5, 0xF5),
-            card: Color32::WHITE,
-            card_border: Color32::from_rgb(0xE3, 0xE3, 0xE3),
-            canvas: Color32::from_rgb(0xF0, 0xF0, 0xF0),
-            text: Color32::from_rgb(0x24, 0x24, 0x24),
-            text_dim: Color32::from_rgb(0x5C, 0x5C, 0x5C),
-            text_faint: Color32::from_rgb(0x99, 0x99, 0x99),
-            border: Color32::from_rgb(0xD6, 0xD6, 0xD6),
-            separator: Color32::from_rgb(0xE1, 0xE1, 0xE1),
-            hover: Color32::from_rgb(0xEB, 0xEB, 0xEB),
-            pressed: Color32::from_rgb(0xDE, 0xDE, 0xDE),
-            selected: Color32::from_rgb(0xE6, 0xE6, 0xE6),
-            accent: Color32::from_rgb(0xD9, 0x5A, 0x1A),
+            chrome: Color32::from_rgb(0xE4, 0xEC, 0xF2),
+            card: Color32::from_rgb(0xF3, 0xF1, 0xE8),
+            card_border: Color32::from_rgb(0xD9, 0xD6, 0xCB),
+            canvas: Color32::from_rgb(0xE8, 0xE4, 0xD8),
+            text: Color32::from_rgb(0x2E, 0x2E, 0x33),
+            text_dim: Color32::from_rgb(0x5C, 0x5C, 0x63),
+            text_faint: Color32::from_rgb(0x7E, 0x7C, 0x74),
+            border: Color32::from_rgb(0xCF, 0xCC, 0xBF),
+            separator: Color32::from_rgb(0xD9, 0xD6, 0xCB),
+            hover: Color32::from_rgb(0xE6, 0xEE, 0xE4),
+            pressed: Color32::from_rgb(0xD6, 0xE0, 0xD4),
+            selected: Color32::from_rgb(0xD6, 0xE4, 0xD4),
+            accent: Color32::from_rgb(0x5B, 0x7D, 0x5B),
             accent_text: Color32::WHITE,
-            contextual: Color32::from_rgb(0xC2, 0x4E, 0x14),
-            selection: Color32::from_rgb(0x7A, 0x7A, 0x7A),
-            handle_fill: Color32::WHITE,
-            handle_stroke: Color32::from_rgb(0x6E, 0x6E, 0x6E),
-            guide: Color32::from_rgb(0xE8, 0x5D, 0x2A),
-            caret: Color32::BLACK,
-            text_selection: Color32::from_rgba_unmultiplied(0x5A, 0x8F, 0xE0, 90),
+            contextual: Color32::from_rgb(0x4A, 0x6B, 0x4A),
+            selection: Color32::from_rgb(0x5B, 0x7D, 0x5B),
+            handle_fill: Color32::from_rgb(0xFC, 0xFA, 0xF4),
+            handle_stroke: Color32::from_rgb(0x5B, 0x7D, 0x5B),
+            guide: Color32::from_rgb(0x6F, 0x8F, 0xB0),
+            caret: Color32::from_rgb(0x2E, 0x2E, 0x33),
+            text_selection: Color32::from_rgba_unmultiplied(0x6F, 0x8F, 0xB0, 90),
             field_bg: Color32::WHITE,
             shadow: Color32::from_black_alpha(28),
         }
@@ -161,15 +163,15 @@ pub fn install_fonts(ctx: &egui::Context) {
 /// [`install_fonts`], with `extra` faces from the font database after every interface font: the
 /// installed or embedded faces that draw text the interface faces lack (Hangul, Simplified
 /// Chinese, Devanagari…, #101). See [`crate::uifonts`].
-pub fn install_fonts_with(ctx: &egui::Context, extra: &[std::sync::Arc<deckcraft_fonts::FontFace>]) {
+pub fn install_fonts_with(ctx: &egui::Context, extra: &[std::sync::Arc<flickdeck_fonts::FontFace>]) {
     ctx.set_fonts(font_definitions(extra));
 }
 
 /// The interface font definitions; see [`install_fonts_with`].
-pub fn font_definitions(extra: &[std::sync::Arc<deckcraft_fonts::FontFace>]) -> FontDefinitions {
+pub fn font_definitions(extra: &[std::sync::Arc<flickdeck_fonts::FontFace>]) -> FontDefinitions {
     let mut defs = FontDefinitions::default();
     let mut names = vec![];
-    for (i, f) in deckcraft_fonts::CRAFT_FONTS.iter().enumerate() {
+    for (i, f) in flickdeck_fonts::CRAFT_FONTS.iter().enumerate() {
         let wanted = (f.family == "Inter" && (f.style == "Regular" || f.style == "SemiBold" || f.style == "Bold"))
             || (f.family == "BIZ UDPGothic" && f.style == "Regular")
             || (f.family == "Noto Sans Arabic");
@@ -205,7 +207,7 @@ pub fn font_definitions(extra: &[std::sync::Arc<deckcraft_fonts::FontFace>]) -> 
 }
 
 /// Add `faces` after every other font of each interface family (the last fallbacks).
-pub fn add_fallback_faces(defs: &mut FontDefinitions, faces: &[std::sync::Arc<deckcraft_fonts::FontFace>]) {
+pub fn add_fallback_faces(defs: &mut FontDefinitions, faces: &[std::sync::Arc<flickdeck_fonts::FontFace>]) {
     for f in faces {
         let name = format!("fallback {} {} {}", f.family, f.style, f.id());
         if defs.font_data.contains_key(&name) {
@@ -228,7 +230,7 @@ pub fn font(size: f32) -> egui::FontId {
     egui::FontId::proportional(size)
 }
 
-pub fn to_color32(c: deckcraft_color::Rgba) -> Color32 {
+pub fn to_color32(c: flickdeck_color::Rgba) -> Color32 {
     Color32::from_rgba_unmultiplied(c.r, c.g, c.b, c.a)
 }
 

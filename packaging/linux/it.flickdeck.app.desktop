@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Flickdeck
+GenericName=Presentation
+Comment=Create and present slide decks
+Exec=flickdeck %F
+TryExec=flickdeck
+Icon=it.flickdeck.app
+Terminal=false
+StartupNotify=true
+StartupWMClass=it.flickdeck.app
+Categories=Office;Presentation;
+MimeType=application/x-flickdeck;application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.openxmlformats-officedocument.presentationml.template;application/vnd.openxmlformats-officedocument.presentationml.slideshow;
+Keywords=presentation;slides;slide show;deck;pptx;keynote;powerpoint;
