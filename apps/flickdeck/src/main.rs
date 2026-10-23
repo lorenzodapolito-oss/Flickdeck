@@ -215,6 +215,8 @@ fn main() -> eframe::Result {
             }
             Startup::Run { control_port, files, sample, show } => (control_port, files, sample, show),
         };
+    // Italian by default; `FLICKDECK_LANG=en` keeps the English interface.
+    flickdeck_ui_egui::i18n::set_language(&std::env::var("FLICKDECK_LANG").unwrap_or_else(|_| "it".into()));
     log::info!("Flickdeck {} ({} {})", env!("CARGO_PKG_VERSION"), std::env::consts::OS, std::env::consts::ARCH);
     // The log file lives under the settings directory; opened after the arguments, so `--help` and
     // `--version` leave no file behind. Records logged until now are written to it first.

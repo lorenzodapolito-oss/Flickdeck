@@ -15,6 +15,7 @@ pub mod dialogs;
 pub mod doc_window;
 pub mod eyedropper;
 pub mod fillui;
+pub mod i18n;
 pub mod icons;
 pub mod media;
 pub mod menus;
@@ -747,7 +748,7 @@ impl SlideApp {
             "flickdeck" => ("flickdeck", "flickdeck", false),
             "gif" => ("gif", "gif", false),
             other => {
-                self.set_status(format!("Flickdeck can't export “{other}”"));
+                self.set_status(crate::i18n::tf("Flickdeck can't export “{}”", &[&other]));
                 return false;
             }
         };
@@ -760,7 +761,7 @@ impl SlideApp {
             }
             return match self.run("file.export", params) {
                 Ok(_) => {
-                    self.set_status(format!("Exported {path}"));
+                    self.set_status(crate::i18n::tf("Exported {}", &[&path]));
                     true
                 }
                 Err(_) => false,
@@ -798,7 +799,7 @@ impl SlideApp {
                 false
             }
             (Ok(_), None) => {
-                self.set_status("Saving a copy needs a file picker, which this window doesn't have.");
+                self.set_status(crate::i18n::t("Saving a copy needs a file picker, which this window doesn't have."));
                 false
             }
         }
@@ -824,7 +825,7 @@ impl SlideApp {
         match self.run("file.export", params) {
             Ok(_) => {
                 self.open_url(&format!("file:///{}", path.replace('\\', "/").trim_start_matches('/')));
-                self.set_status("Opened the presentation as a PDF to print");
+                self.set_status(crate::i18n::t("Opened the presentation as a PDF to print"));
                 true
             }
             Err(_) => false,
@@ -989,7 +990,7 @@ impl SlideApp {
                     None => backstage::Page::Home,
                 };
                 if page.needs_doc() && self.session.active().is_none() {
-                    return Err(format!("File › {} needs an open presentation", page.label()));
+                    return Err(crate::i18n::tf("File › {} needs an open presentation", &[&crate::i18n::t(page.label())]));
                 }
                 self.open_backstage(page);
                 return Ok(json!({"page": page.id()}));
@@ -1156,7 +1157,7 @@ impl SlideApp {
         };
         if timeline.is_empty() {
             self.anim_preview = None;
-            self.set_status("This slide has no animations");
+            self.set_status(crate::i18n::t("This slide has no animations"));
             return Ok(json!({"playing": false}));
         }
         if matches!(self.ui.view, ViewMode::Sorter | ViewMode::NotesPage) {
@@ -1165,7 +1166,7 @@ impl SlideApp {
         self.close_backstage();
         let duration = timeline.total_duration();
         self.anim_preview = Some(AnimPreview { uid, slide, slide_ptr: ptr, started: None, elapsed: 0.0, timeline });
-        self.set_status("Previewing animations");
+        self.set_status(crate::i18n::t("Previewing animations"));
         Ok(json!({"playing": true, "slide": slide, "duration": duration}))
     }
 
@@ -1234,7 +1235,7 @@ impl SlideApp {
         };
         let Some(path) = pick("open") else { return };
         match self.session.execute("slide.reuse", &json!({"path": path, "keepFormatting": keep})) {
-            Ok(r) => self.set_status(format!("Inserted {} slides from {path}", r["slides"])),
+            Ok(r) => self.set_status(crate::i18n::tf("Inserted {} slides from {}", &[&r["slides"], &path])),
             Err(e) => self.set_status(e.to_string()),
         }
     }
@@ -1286,7 +1287,7 @@ impl SlideApp {
             if let Some(path) = pick(&suggested) {
                 match self.session.execute("file.saveAs", &json!({"path": path})) {
                     Ok(_) => {
-                        self.set_status(format!("Saved {path}"));
+                        self.set_status(crate::i18n::tf("Saved {}", &[&path]));
                         self.ui.recent.retain(|p| *p != path);
                         self.ui.recent.insert(0, path);
                     }
@@ -1320,7 +1321,7 @@ impl SlideApp {
     pub fn save(&mut self) {
         if self.session.active().and_then(|d| d.path.clone()).is_some() {
             match self.session.execute("file.save", &json!({})) {
-                Ok(_) => self.set_status("Saved"),
+                Ok(_) => self.set_status(crate::i18n::t("Saved")),
                 Err(e) => self.set_status(e.to_string()),
             }
         } else {
@@ -1586,7 +1587,7 @@ impl SlideApp {
             if self.session.documents().iter().any(|d| d.is_dirty())
                 && let Err(e) = self.session.execute("file.recovery.save", &json!({}))
             {
-                self.set_status(format!("Couldn't save AutoRecover information: {e}"));
+                self.set_status(crate::i18n::tf("Couldn't save AutoRecover information: {}", &[&e]));
             }
         }
         // On the web, dropped files can only be read asynchronously: the host reads them and

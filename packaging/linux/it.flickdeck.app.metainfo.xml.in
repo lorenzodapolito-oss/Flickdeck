@@ -24,8 +24,8 @@
   <icon type="stock">it.flickdeck.app</icon>
   <!-- Only url types known to appstream 0.15 (Ubuntu 22.04, where CI validates): no vcs-browser. -->
   <url type="homepage">https://github.com/lorenzodapolito-oss/Flickdeck</url>
-  <url type="bugtracker">https://github.com/storytold/deckcraft/issues</url>
-  <url type="help">https://github.com/storytold/deckcraft</url>
+  <url type="bugtracker">https://github.com/lorenzodapolito-oss/Flickdeck/issues</url>
+  <url type="help">https://github.com/lorenzodapolito-oss/Flickdeck</url>
   <url type="contact">https://discord.gg/artcraft</url>
   <categories>
     <category>Office</category>
@@ -40,7 +40,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Slide editor with thumbnails, a process diagram and notes</caption>
-      <image type="source" width="1600" height="1000">https://raw.githubusercontent.com/storytold/deckcraft/main/docs/images/editor.png</image>
+      <image type="source" width="1600" height="1000">https://raw.githubusercontent.com/lorenzodapolito-oss/Flickdeck/main/docs/images/editor.png</image>
     </screenshot>
   </screenshots>
   <branding>

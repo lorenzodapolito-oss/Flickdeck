@@ -26,7 +26,7 @@ impl SlideApp {
     pub fn open_path_in_background(&mut self, path: &str) {
         if let Some(o) = &self.opening {
             let name = o.name();
-            self.set_status(format!("Still opening {name}"));
+            self.set_status(crate::i18n::tf("Still opening {}", &[&name]));
             return;
         }
         #[cfg(target_arch = "wasm32")]
@@ -57,7 +57,7 @@ impl SlideApp {
     /// Stop waiting for the file being opened; the presentation stays as it is.
     pub fn cancel_opening(&mut self) {
         if let Some(o) = self.opening.take() {
-            self.set_status(format!("Stopped opening {}", o.name()));
+            self.set_status(crate::i18n::tf("Stopped opening {}", &[&o.name()]));
         }
     }
 
@@ -94,13 +94,13 @@ impl SlideApp {
             ui.set_width(320.0);
             ui.horizontal(|ui| {
                 ui.add(egui::Spinner::new().size(18.0));
-                ui.label(format!("Opening {name}…"));
+                ui.label(crate::i18n::tf("Opening {}…", &[&name]));
             });
             ui.add_space(6.0);
             ui.weak(format!("Reading the file: {secs:.0} s"));
             ui.add_space(6.0);
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                cancel = ui.button("Cancel").clicked();
+                cancel = ui.button(crate::i18n::t("Cancel")).clicked();
             });
         });
         if cancel || ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::Escape)) {

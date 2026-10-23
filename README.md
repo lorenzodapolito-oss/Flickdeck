@@ -16,8 +16,9 @@ normalmente con PowerPoint.
   (il bianco puro resta solo nei campi di testo).
 - **Modalità portatile**: crea una cartella `flickdeck-data` accanto al programma e impostazioni e log
   restano lì (vedi sotto).
-- **Interfaccia in italiano**: in corso. DeckCraft non ha un sistema di traduzione, quindi va costruito:
-  finché non è completo, ciò che manca appare in inglese.
+- **Interfaccia in italiano**: nastro, menu, finestre di dialogo e pannelli sono tradotti
+  (circa 1.200 testi, in `crates/ui-egui/src/i18n/it.tsv`). Ciò che non è ancora tradotto appare in
+  inglese. Per l'interfaccia inglese avvia il programma con la variabile `FLICKDECK_LANG=en`.
 
 Tutto il resto, cioè motore delle diapositive, forme, tabelle, grafici, transizioni, animazioni e
 presentazione a schermo intero, è il lavoro di DeckCraft, che è in sviluppo iniziale.
