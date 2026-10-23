@@ -48,6 +48,15 @@ use serde_json::{Value, json};
 
 pub use control::{ControlRequest, ControlResponse};
 
+/// The app's name as shown in window titles, and whose copy it is.
+pub const APP_NAME: &str = "Flickdeck";
+pub const APP_OWNER: &str = "Lorenzo D'Apolito";
+
+/// The name shown in the title bar and the window title: "Flickdeck di Lorenzo D'Apolito".
+pub fn app_title() -> String {
+    format!("{APP_NAME} di {APP_OWNER}")
+}
+
 pub type ReadFn = Box<dyn Fn(&str) -> Result<Vec<u8>, String>>;
 pub type WriteFn = Box<dyn FnMut(&str, &[u8]) -> Result<(), String>>;
 pub type PickFn = Box<dyn FnMut(&str) -> Option<String>>;
@@ -2077,6 +2086,12 @@ mod tests {
     #![allow(clippy::unwrap_used, clippy::expect_used)]
 
     use super::*;
+
+    /// The title bar and the window title name the app and its owner.
+    #[test]
+    fn app_title_names_the_owner() {
+        assert_eq!(app_title(), "Flickdeck di Lorenzo D'Apolito");
+    }
     use egui_kittest::kittest::Queryable;
 
     fn shape_rot(app: &SlideApp) -> f64 {

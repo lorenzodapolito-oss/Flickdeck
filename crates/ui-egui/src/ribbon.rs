@@ -75,9 +75,21 @@ pub fn title_bar(app: &mut SlideApp, ui: &mut Ui) {
         let has_doc = app.session.active().is_some();
         let dirty = app.session.active().is_some_and(|d| d.is_dirty());
         crate::qat::show(app, &mut child);
-        let title =
-            app.session.active().map(|d| format!("{}{}", d.title(), if dirty { " — Edited" } else { "" })).unwrap_or_else(|| "Flickdeck".into());
-        ui.painter().text(rect.center(), Align2::CENTER_CENTER, title, theme::font(13.0), t.text);
+        let owner = crate::app_title();
+        let with_doc = app.session.active().map(|d| format!("{}{} — {owner}", d.title(), if dirty { " — Edited" } else { "" }));
+        // The room between the Quick Access Toolbar and the buttons on the right: the whole title
+        // when it fits, else the app's name alone, so the text never runs over the controls.
+        let half = (rect.center().x - (child.min_rect().max.x + 10.0)).min(rect.max.x - 320.0 - rect.center().x);
+        let room = (2.0 * half).max(0.0);
+        let font = theme::font(13.0);
+        let fits = |text: &str| ui.painter().layout_no_wrap(text.to_owned(), font.clone(), t.text).size().x <= room;
+        let title = match with_doc {
+            Some(full) if fits(&full) => full,
+            _ => owner,
+        };
+        if fits(&title) {
+            ui.painter().text(rect.center(), Align2::CENTER_CENTER, title, font, t.text);
+        }
         // Right side.
         let mut right = ui.new_child(
             egui::UiBuilder::new()
