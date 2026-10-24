@@ -63,3 +63,12 @@ MCP, versione web) è nella cartella [`docs/`](docs/) e nel
 `MIT OR Apache-2.0`, come il progetto originale. Copyright dell'ArtCraft Team e dei collaboratori di
 DeckCraft; le modifiche di questo fork sono rilasciate con la stessa licenza. Le risorse grafiche e i
 loro autori sono elencati in [ATTRIBUTION.md](ATTRIBUTION.md).
+
+## Scarica per Windows
+
+**[Scarica DocPlane.it (zip)](https://github.com/lorenzodapolito-oss/DocPlane/releases/latest/download/DocPlane.it.zip)** · [tutte le versioni](https://github.com/lorenzodapolito-oss/DocPlane/releases)
+
+Flickdeck.it è nel pacchetto **DocPlane.it**, insieme agli altri due programmi (WordBook.it, SheetCalc.it, Flickdeck.it)
+e ai dizionari. Decomprimi lo zip in una cartella e apri `DocPlane.it.exe`, oppure direttamente `Flickdeck.it.exe`.
+Al primo avvio Windows può mostrare «Windows ha protetto il PC» (i programmi non sono firmati):
+scegli *Ulteriori informazioni*, poi *Esegui comunque*.
