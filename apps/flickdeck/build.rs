@@ -14,11 +14,11 @@ fn main() {
     }
     let mut res = winresource::WindowsResource::new();
     res.set_icon("../../assets/app-icon/flickdeck.ico")
-        .set("ProductName", "Flickdeck")
-        .set("FileDescription", "Flickdeck presentations")
+        .set("ProductName", "Flickdeck.it")
+        .set("FileDescription", "Flickdeck.it presentations")
         .set("CompanyName", "Flickdeck")
-        .set("LegalCopyright", "Copyright (c) the Flickdeck authors. MIT OR Apache-2.0.")
-        .set("OriginalFilename", "Flickdeck.exe")
+        .set("LegalCopyright", "Copyright (c) the Flickdeck.it authors. MIT OR Apache-2.0.")
+        .set("OriginalFilename", "Flickdeck.it.exe")
         .set("InternalName", "flickdeck");
     if let Err(e) = res.compile() {
         if std::env::var_os("FLICKDECK_REQUIRE_WINRES").is_some() {

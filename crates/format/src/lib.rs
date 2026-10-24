@@ -38,7 +38,7 @@ struct Budget {
 
 #[derive(Debug, thiserror::Error)]
 pub enum FormatError {
-    #[error("not a Flickdeck file: {0}")]
+    #[error("not a Flickdeck.it file: {0}")]
     NotOurs(String),
     #[error("damaged file: {0}")]
     Damaged(String),
@@ -161,7 +161,7 @@ fn load_within(bytes: &[u8], budget: Budget) -> Result<(Presentation, Vec<String
         let name = format!("media/{}", item.id.0);
         let linked_only = item.link.is_some() && z.index_for_name(&name).is_none();
         if z.by_name(&name).is_ok_and(|f| f.size() > left) {
-            return Err(FormatError::Damaged("embedded media is larger than Flickdeck can open".into()));
+            return Err(FormatError::Damaged("embedded media is larger than Flickdeck.it can open".into()));
         }
         match read_entry_max(&mut z, &name, left.min(MAX_ENTRY)) {
             Ok(data) => {

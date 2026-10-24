@@ -13,7 +13,7 @@
 3-D Rotation	Rotazione 3D
 A fixed copy that keeps its layout on any device	Una copia fissa che mantiene l'impaginazione su qualsiasi dispositivo
 A photo album holds at most 48 pictures or text boxes	Un album fotografico contiene al massimo 48 immagini o caselle di testo
-About Flickdeck	Informazioni su Flickdeck
+About Flickdeck.it	Informazioni su Flickdeck.it
 Accent 1	Colore 1
 Accent 2	Colore 2
 Accent 3	Colore 3
@@ -393,8 +393,8 @@ Fit to Window	Adatta alla finestra
 Fit to\nWindow	Adatta alla\nfinestra
 Flat	Piatto
 Flickdeck Presentation (*.flickdeck)	Presentazione Flickdeck (*.flickdeck)
-Flickdeck can't export “{}”	Flickdeck non può esportare «{}»
-Flickdeck can't find “{}”.	Flickdeck non trova «{}».
+Flickdeck.it can't export “{}”	Flickdeck.it non può esportare «{}»
+Flickdeck.it can't find “{}”.	Flickdeck.it non trova «{}».
 Flickdeck's own format: everything is kept	Formato proprio di Flickdeck: viene conservato tutto
 Flip	Capovolgi
 Flip Horizontal	Capovolgi orizzontalmente
@@ -791,7 +791,7 @@ Presentations and slide shows, rebuilt from scratch in pure Rust.	Presentazioni 
 Presentations you open show up here. Use Open to browse for one.	Le presentazioni che apri compaiono qui. Usa Apri per cercarne una.
 Presented by a speaker (full screen)	Presentata da un relatore (schermo intero)
 Presenter View	Visualizzazione relatore
-Presenter View — Flickdeck	Visualizzazione relatore — Flickdeck
+Presenter View — Flickdeck.it	Visualizzazione relatore — Flickdeck.it
 Presenter\nView	Visualizzazione\nrelatore
 Preserve	Mantieni
 Preset gradients	Sfumature predefinite

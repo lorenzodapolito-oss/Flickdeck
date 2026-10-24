@@ -172,7 +172,7 @@ fn default_lang(st: &DocState) -> String {
             return l;
         }
     }
-    "en-US".into()
+    flickdeck_engine::spell::default_language()
 }
 
 /// A word under a squiggle: `(tag, start, end)`.

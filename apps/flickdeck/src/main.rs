@@ -216,8 +216,11 @@ fn main() -> eframe::Result {
             Startup::Run { control_port, files, sample, show } => (control_port, files, sample, show),
         };
     // Italian by default; `FLICKDECK_LANG=en` keeps the English interface.
-    flickdeck_ui_egui::i18n::set_language(&std::env::var("FLICKDECK_LANG").unwrap_or_else(|_| "it".into()));
-    log::info!("Flickdeck {} ({} {})", env!("CARGO_PKG_VERSION"), std::env::consts::OS, std::env::consts::ARCH);
+    let ui_language = std::env::var("FLICKDECK_LANG").unwrap_or_else(|_| "it".into());
+    flickdeck_ui_egui::i18n::set_language(&ui_language);
+    // Text with no language of its own is checked in the interface language.
+    flickdeck_engine::spell::set_default_language(if ui_language.trim().eq_ignore_ascii_case("it") { "it-IT" } else { "en-US" });
+    log::info!("Flickdeck.it {} ({} {})", env!("CARGO_PKG_VERSION"), std::env::consts::OS, std::env::consts::ARCH);
     // The log file lives under the settings directory; opened after the arguments, so `--help` and
     // `--version` leave no file behind. Records logged until now are written to it first.
     if let Some(logger) = logger {
@@ -252,7 +255,7 @@ fn main() -> eframe::Result {
         display::Choice::None => {
             // winit's own error says little to someone who started Flickdeck from a console.
             log::error!("no display: DISPLAY and WAYLAND_DISPLAY are not set");
-            eprintln!("Flickdeck needs a graphical session: neither DISPLAY nor WAYLAND_DISPLAY is set.");
+            eprintln!("Flickdeck.it needs a graphical session: neither DISPLAY nor WAYLAND_DISPLAY is set.");
             false
         }
     };
@@ -273,7 +276,7 @@ fn main() -> eframe::Result {
     #[cfg(target_os = "macos")]
     let apple_events = &apple_events;
     eframe::run_native(
-        "Flickdeck",
+        "Flickdeck.it",
         options,
         Box::new(move |cc| {
             let mut app = SlideApp::new(Session::new(), services());

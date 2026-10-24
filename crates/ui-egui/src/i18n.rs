@@ -177,7 +177,7 @@ mod tests {
         "Standard (4:3)",
         "Widescreen (16:9)",
         "Width: ",
-        "Flickdeck",
+        "Flickdeck.it",
         "PDF (*.pdf)",
         "Account",
         "Audio",

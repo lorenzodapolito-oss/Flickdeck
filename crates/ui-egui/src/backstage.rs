@@ -695,7 +695,7 @@ fn home(app: &mut SlideApp, ui: &mut Ui, bs: &mut Backstage, out: &mut Outcome) 
     ui.horizontal(|ui| {
         let (r, _) = ui.allocate_exact_size(vec2(36.0, 36.0), Sense::hover());
         crate::dialogs::paint_logo(ui.painter(), r);
-        ui.label(RichText::new(crate::i18n::t("Flickdeck")).font(theme::bold(24.0)).color(t.text));
+        ui.label(RichText::new(crate::i18n::t("Flickdeck.it")).font(theme::bold(24.0)).color(t.text));
     });
     ui.add_space(18.0);
     ui.horizontal(|ui| {
@@ -1046,9 +1046,9 @@ fn print(app: &mut SlideApp, ui: &mut Ui, bs: &mut Backstage) {
             dim(
                 ui,
                 if app.services.pick_save.is_some() {
-                    "Flickdeck prints through a PDF: it opens in your PDF viewer, where you choose the printer."
+                    "Flickdeck.it prints through a PDF: it opens in your PDF viewer, where you choose the printer."
                 } else {
-                    "Flickdeck prints through a PDF: it downloads, ready to print from your browser or PDF viewer."
+                    "Flickdeck.it prints through a PDF: it downloads, ready to print from your browser or PDF viewer."
                 },
             );
             ui.add_space(14.0);
@@ -1361,7 +1361,7 @@ fn account(app: &mut SlideApp, ui: &mut Ui) {
             });
             ui.add_space(16.0);
             heading(ui, "User Information");
-            dim(ui, "Flickdeck has no accounts: there is nothing to sign in to, and your presentations stay on your device.");
+            dim(ui, "Flickdeck.it has no accounts: there is nothing to sign in to, and your presentations stay on your device.");
         });
         ui.add_space(40.0);
         ui.vertical(|ui| {
@@ -1369,7 +1369,7 @@ fn account(app: &mut SlideApp, ui: &mut Ui) {
             ui.horizontal(|ui| {
                 let (r, _) = ui.allocate_exact_size(vec2(40.0, 40.0), Sense::hover());
                 crate::dialogs::paint_logo(ui.painter(), r);
-                ui.label(RichText::new(crate::i18n::t("Flickdeck")).font(theme::bold(24.0)).color(t.text));
+                ui.label(RichText::new(crate::i18n::t("Flickdeck.it")).font(theme::bold(24.0)).color(t.text));
             });
             dim(ui, &crate::dialogs::version_line());
             dim(ui, "Open source under MIT OR Apache-2.0. Not affiliated with Microsoft.");
@@ -1377,8 +1377,8 @@ fn account(app: &mut SlideApp, ui: &mut Ui) {
             if task(
                 ui,
                 Icon::Help,
-                "About Flickdeck",
-                "About Flickdeck",
+                "About Flickdeck.it",
+                "About Flickdeck.it",
                 "The version, the people and models who built it, and where to find us.",
                 true,
             ) {

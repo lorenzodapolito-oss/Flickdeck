@@ -47,7 +47,7 @@ fn title(id: &str) -> &'static str {
         "paragraph" => "Paragraph",
         "tabs" => "Tabs",
         "font" => "Font",
-        "about" => "About Flickdeck",
+        "about" => "About Flickdeck.it",
         "preferences" => "Preferences",
         "autocorrect" => "AutoCorrect",
         "gridOptions" => "Grid Options",
@@ -68,10 +68,10 @@ fn title(id: &str) -> &'static str {
         "smartart" => "Choose a SmartArt Graphic",
         "bullets" => "Bullets and Numbering",
         "action" => "Action Settings",
-        "quit" => "Flickdeck",
+        "quit" => "Flickdeck.it",
         "themeColors" => "Create New Theme Colors",
         "themeFonts" => "Create New Theme Fonts",
-        _ => "Flickdeck",
+        _ => "Flickdeck.it",
     }
 }
 
@@ -2628,7 +2628,7 @@ pub fn about(_app: &mut SlideApp, ui: &mut Ui) {
     ui.vertical_centered(|ui| {
         let (r, _) = ui.allocate_exact_size(vec2(64.0, 64.0), Sense::hover());
         paint_logo(ui.painter(), r);
-        ui.label(egui::RichText::new(crate::i18n::t("Flickdeck")).font(theme::bold(22.0)));
+        ui.label(egui::RichText::new(crate::i18n::t("Flickdeck.it")).font(theme::bold(22.0)));
         ui.label(egui::RichText::new(version_line()).color(t.text_dim));
         ui.add_space(6.0);
         ui.label(crate::i18n::t("Presentations and slide shows, rebuilt from scratch in pure Rust."));
@@ -2681,7 +2681,7 @@ pub fn paint_logo(p: &egui::Painter, r: Rect) {
 /// The selection's proofing language and whether it's marked Do Not Check Spelling: the run at
 /// the caret, else the first run of the first selected shape; US English when none says.
 pub fn selected_language(app: &SlideApp) -> (String, bool) {
-    let Some(st) = app.session.active() else { return ("en-US".into(), false) };
+    let Some(st) = app.session.active() else { return (flickdeck_engine::spell::default_language(), false) };
     let run = |sh: &flickdeck_model::Shape, at: Option<(usize, usize)>| -> Option<flickdeck_model::RunProps> {
         let t = sh.text.as_ref()?;
         if let Some((p, c)) = at {
@@ -2702,7 +2702,7 @@ pub fn selected_language(app: &SlideApp) -> (String, bool) {
         _ => st.selection.shapes.first().and_then(|id| st.shape(*id)).and_then(|sh| run(sh, None)),
     };
     let props = props.unwrap_or_default();
-    (props.lang.unwrap_or_else(|| "en-US".into()), props.no_proof == Some(true))
+    (props.lang.unwrap_or_else(flickdeck_engine::spell::default_language), props.no_proof == Some(true))
 }
 
 fn seed_once(d: &mut Dialog, key: &str, val: String) {
@@ -3243,7 +3243,7 @@ fn find_dialog(app: &mut SlideApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 p["with"] = json!(d.get("with", ""));
                 let msg = match app.session.execute("text.replace", &p) {
                     Ok(v) => crate::i18n::tf("Replaced {} occurrence(s).", &[&v.get("replaced").and_then(Value::as_u64).unwrap_or(0)]),
-                    Err(_) => crate::i18n::tf("Flickdeck can't find “{}”.", &[&text]),
+                    Err(_) => crate::i18n::tf("Flickdeck.it can't find “{}”.", &[&text]),
                 };
                 d.fields.insert("status".into(), msg);
                 d.fields.remove("cur");
@@ -3258,7 +3258,7 @@ fn find_dialog(app: &mut SlideApp, ui: &mut Ui, d: &mut Dialog) -> bool {
     if find_next {
         let list = app.session.execute("text.find", &q).ok().and_then(|v| v.as_array().cloned()).unwrap_or_default();
         if list.is_empty() {
-            d.fields.insert("status".into(), crate::i18n::tf("Flickdeck can't find “{}”.", &[&text]));
+            d.fields.insert("status".into(), crate::i18n::tf("Flickdeck.it can't find “{}”.", &[&text]));
             d.fields.remove("cur");
         } else {
             let n = d.get("next", "0").parse::<usize>().unwrap_or(0) % list.len();

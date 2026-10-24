@@ -49,10 +49,10 @@ use serde_json::{Value, json};
 pub use control::{ControlRequest, ControlResponse};
 
 /// The app's name as shown in window titles, and whose copy it is.
-pub const APP_NAME: &str = "Flickdeck";
+pub const APP_NAME: &str = "Flickdeck.it";
 pub const APP_OWNER: &str = "Lorenzo D'Apolito";
 
-/// The name shown in the title bar and the window title: "Flickdeck di Lorenzo D'Apolito".
+/// The name shown in the title bar and the window title: "Flickdeck.it di Lorenzo D'Apolito".
 pub fn app_title() -> String {
     format!("{APP_NAME} di {APP_OWNER}")
 }
@@ -201,7 +201,7 @@ fn command_for(purpose: FilePurpose, name: &str, bytes: &[u8]) -> Result<&'stati
         FilePurpose::Open => open_command(name),
         FilePurpose::Infer => infer_command(name, bytes),
     };
-    cmd.ok_or_else(|| format!("{name}: Flickdeck can't open this kind of file"))
+    cmd.ok_or_else(|| format!("{name}: Flickdeck.it can't open this kind of file"))
 }
 
 /// How long a transient status message stays visible.
@@ -402,7 +402,7 @@ pub const UI_COMMANDS: &[(&str, &str, Option<&str>, &str)] = &[
         Some("Cmd+P"),
         "{layout?, perPage?, slides?, includeHidden?, frame?, paper?: letter|a4|legal|a3, orientation?: portrait|landscape}",
     ),
-    ("app.about", "About Flickdeck", None, "{}"),
+    ("app.about", "About Flickdeck.it", None, "{}"),
     ("app.palette", "Command Palette", Some("Cmd+Shift+P"), "{}"),
     ("app.preferences", "Preferences…", Some("Cmd+,"), "{}"),
     ("app.openDialog", "Open…", None, "{purpose?}"),
@@ -757,7 +757,7 @@ impl SlideApp {
             "flickdeck" => ("flickdeck", "flickdeck", false),
             "gif" => ("gif", "gif", false),
             other => {
-                self.set_status(crate::i18n::tf("Flickdeck can't export “{}”", &[&other]));
+                self.set_status(crate::i18n::tf("Flickdeck.it can't export “{}”", &[&other]));
                 return false;
             }
         };
@@ -2090,7 +2090,7 @@ mod tests {
     /// The title bar and the window title name the app and its owner.
     #[test]
     fn app_title_names_the_owner() {
-        assert_eq!(app_title(), "Flickdeck di Lorenzo D'Apolito");
+        assert_eq!(app_title(), "Flickdeck.it di Lorenzo D'Apolito");
     }
     use egui_kittest::kittest::Queryable;
 

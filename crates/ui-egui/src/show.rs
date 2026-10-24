@@ -1756,7 +1756,7 @@ fn presenter_window(ctx: &egui::Context, show: &mut Show, doc: &Presentation, no
     };
     ctx.show_viewport_immediate(
         egui::ViewportId::from_hash_of("flickdeck_presenter"),
-        egui::ViewportBuilder::default().with_title("Presenter View — Flickdeck").with_inner_size([1100.0, 700.0]),
+        egui::ViewportBuilder::default().with_title("Presenter View — Flickdeck.it").with_inner_size([1100.0, 700.0]),
         |ui, _| {
             if !keyboard(ui.ctx(), show, doc, now) {
                 *keep = false;

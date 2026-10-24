@@ -127,13 +127,13 @@ impl Backend for Remote {
             self.conn = None;
             self.send(&line).map_err(|e| {
                 self.conn = None;
-                format!("Flickdeck app at {} is not reachable: {e}", self.addr)
+                format!("Flickdeck.it app at {} is not reachable: {e}", self.addr)
             })?;
         }
         self.receive(id).map_err(|e| {
             self.conn = None;
             format!(
-                "lost the reply from the Flickdeck app at {} ({e}); the command may or may not have run, check the document before retrying",
+                "lost the reply from the Flickdeck.it app at {} ({e}); the command may or may not have run, check the document before retrying",
                 self.addr
             )
         })?
@@ -144,7 +144,7 @@ impl Backend for Remote {
     }
 
     fn describe(&self) -> String {
-        format!("connected to the Flickdeck app at {}", self.addr)
+        format!("connected to the Flickdeck.it app at {}", self.addr)
     }
 }
 

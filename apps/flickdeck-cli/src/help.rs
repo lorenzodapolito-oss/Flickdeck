@@ -117,7 +117,7 @@ calls it.
     Subcommand {
         name: "app",
         usage: "app [--port PORT] COMMAND [PARAMS] | --method METHOD [PARAMS]",
-        summary: "run a command in the Flickdeck app started with --control",
+        summary: "run a command in the Flickdeck.it app started with --control",
         details: "Sends one request to the Flickdeck app started with `flickdeck --control PORT` (port 7979 by default)
 and prints its answer as JSON. COMMAND [PARAMS] runs a command, as run --cmd does; --method METHOD
 [PARAMS] calls a control-channel method such as ui.screenshot. PARAMS is a JSON object.
@@ -151,8 +151,8 @@ median and slowest of N runs (5 by default, 1 to 1000) as a table, or as JSON wi
     Subcommand {
         name: "links",
         usage: "links",
-        summary: "print the Flickdeck community and project links",
-        details: "Prints the Flickdeck community and project links.",
+        summary: "print the Flickdeck.it community and project links",
+        details: "Prints the Flickdeck.it community and project links.",
     },
     Subcommand { name: "version", usage: "--version", summary: "print the version", details: "Prints the version of flickdeck-cli." },
 ];

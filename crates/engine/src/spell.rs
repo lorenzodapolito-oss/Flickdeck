@@ -477,12 +477,48 @@ fn strip_start(w: &[char], add: &str, strip: &str) -> Option<Vec<char>> {
     (!v.is_empty()).then_some(v)
 }
 
+/// Dictionary folders that travel with the program: `flickdeck-data/dictionaries` (portable mode),
+/// then a plain `dictionaries` folder beside the program. Only the ones that exist.
+pub fn program_dirs() -> Vec<PathBuf> {
+    let Some(exe_dir) = std::env::current_exe().ok().and_then(|e| e.parent().map(Path::to_path_buf)) else { return vec![] };
+    program_dirs_in(&exe_dir)
+}
+
+fn program_dirs_in(exe_dir: &Path) -> Vec<PathBuf> {
+    [exe_dir.join("flickdeck-data").join("dictionaries"), exe_dir.join("dictionaries")].into_iter().filter(|d| d.is_dir()).collect()
+}
+
+fn default_lang() -> &'static Mutex<String> {
+    static L: OnceLock<Mutex<String>> = OnceLock::new();
+    L.get_or_init(|| Mutex::new("en-US".to_string()))
+}
+
+/// The language checks use when the text names none (the app sets it at start-up: Italian).
+pub fn set_default_language(lang: &str) {
+    if valid_lang(lang)
+        && let Ok(mut l) = default_lang().lock()
+    {
+        *l = lang.to_string();
+    }
+}
+
+/// The language checks use when the text names none; `en-US` until [`set_default_language`].
+pub fn default_language() -> String {
+    default_lang().lock().map(|l| l.clone()).unwrap_or_else(|_| "en-US".to_string())
+}
+
 /// The folders searched for dictionaries, in order.
 pub fn search_dirs() -> Vec<PathBuf> {
     let mut out = vec![];
     if let Some(v) = std::env::var_os("FLICKDECK_DICTIONARIES") {
         out.extend(std::env::split_paths(&v));
     }
+    // The dictionaries of the DocPlane.it suite: all three programs read the same folder, named by
+    // DOCPLANE_DICTIONARIES when DocPlane.it starts a program, else found beside the program.
+    if let Some(v) = std::env::var_os("DOCPLANE_DICTIONARIES") {
+        out.extend(std::env::split_paths(&v));
+    }
+    out.extend(program_dirs());
     let home = std::env::var_os("HOME").map(PathBuf::from);
     if cfg!(target_os = "macos") {
         out.extend(home.iter().map(|h| h.join("Library/Application Support/Flickdeck/Dictionaries")));
@@ -583,6 +619,13 @@ pub fn user_dictionary_path() -> Option<PathBuf> {
         && let Some(p) = p.clone()
     {
         return Some(p);
+    }
+    // Portable mode: the personal dictionary stays in the program's own data folder.
+    if let Some(exe_dir) = std::env::current_exe().ok().and_then(|e| e.parent().map(Path::to_path_buf)) {
+        let portable = exe_dir.join("flickdeck-data");
+        if portable.is_dir() {
+            return Some(portable.join("dictionaries").join("user.dic"));
+        }
     }
     let home = std::env::var_os("HOME").map(PathBuf::from);
     let dir = if cfg!(target_os = "macos") {
@@ -908,5 +951,26 @@ SFX D Y 1\nSFX D 0 ed/S .\n";
         assert_eq!(stem("en-US").as_deref(), Some("en_GB"));
         assert_eq!(stem("fr-FR"), None);
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn dictionaries_beside_the_program_are_searched() {
+        let exe_dir = std::env::temp_dir().join(format!("flickdeck-dict-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&exe_dir);
+        std::fs::create_dir_all(&exe_dir).unwrap();
+        assert!(program_dirs_in(&exe_dir).is_empty());
+        std::fs::create_dir_all(exe_dir.join("dictionaries")).unwrap();
+        std::fs::create_dir_all(exe_dir.join("flickdeck-data").join("dictionaries")).unwrap();
+        assert_eq!(program_dirs_in(&exe_dir), [exe_dir.join("flickdeck-data").join("dictionaries"), exe_dir.join("dictionaries")]);
+        let _ = std::fs::remove_dir_all(&exe_dir);
+    }
+
+    #[test]
+    fn the_default_language_can_be_set_and_junk_is_ignored() {
+        // Only the refusal is tested here: the language is process-wide and other tests read it.
+        let before = default_language();
+        set_default_language("../x");
+        set_default_language("");
+        assert_eq!(default_language(), before);
     }
 }

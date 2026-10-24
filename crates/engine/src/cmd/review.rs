@@ -302,7 +302,7 @@ const COMMON: &[&str] = &[
     "wierd",
 ];
 
-/// The language a check uses: the `lang` parameter, else the first run that says, else US English.
+/// The language a check uses: the `lang` parameter, else the first run that says, else the default language (US English until the app sets another).
 fn check_lang(doc: &flickdeck_model::Presentation, p: &Value) -> String {
     if let Some(l) = str_param(p, "lang") {
         return l.to_string();
@@ -317,7 +317,7 @@ fn check_lang(doc: &flickdeck_model::Presentation, p: &Value) -> String {
             }
         });
     }
-    found.unwrap_or_else(|| "en-US".into())
+    found.unwrap_or_else(crate::spell::default_language)
 }
 
 fn spelling(s: &mut Session, p: &Value) -> Result<Value> {
@@ -529,7 +529,7 @@ fn walk_text_mut(shapes: &mut [flickdeck_model::Shape], depth: usize, f: &mut dy
 fn dictionary_info(s: &mut Session, p: &Value) -> Result<Value> {
     let lang = match s.doc() {
         Ok(st) => check_lang(&st.doc, p),
-        Err(_) => str_param(p, "lang").unwrap_or("en-US").to_string(),
+        Err(_) => str_param(p, "lang").map(str::to_string).unwrap_or_else(crate::spell::default_language),
     };
     let dirs = crate::spell::search_dirs();
     let found = crate::spell::find_in(&dirs, &lang).map(|(a, _)| a.with_extension("").display().to_string());
